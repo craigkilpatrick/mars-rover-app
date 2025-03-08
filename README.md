@@ -4,6 +4,9 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![Build Status](https://github.com/craigkilpatrick/mars-rover-app/actions/workflows/ci.yml/badge.svg)](https://github.com/craigkilpatrick/mars-rover-app/actions)
+[![Coverage Status](https://coveralls.io/repos/github/craigkilpatrick/mars-rover-app/badge.svg)](https://coveralls.io/github/craigkilpatrick/mars-rover-app)
+[![Dependencies](https://status.david-dm.org/gh/craigkilpatrick/mars-rover-app.svg)](https://david-dm.org/craigkilpatrick/mars-rover-app)
 
 An interactive web application for controlling and visualizing Mars rovers on a grid-based terrain. Built with React and integrated with a Java Spring Boot backend API.
 
