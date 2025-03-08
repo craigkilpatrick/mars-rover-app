@@ -1,5 +1,10 @@
 # Mars Rover Control Application
 
+[![React](https://img.shields.io/badge/React-18.0.0-blue.svg)](https://reactjs.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
 An interactive web application for controlling and visualizing Mars rovers on a grid-based terrain. Built with React and integrated with a Java Spring Boot backend API.
 
 ## Features
