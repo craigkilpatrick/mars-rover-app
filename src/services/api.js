@@ -1,23 +1,48 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'http://localhost:8080';
 
 export const roverService = {
   fetchRovers: async () => {
-    const response = await axios.get(`${API_BASE_URL}/rovers`);
-    if (response.data._embedded?.roverList) {
-      return response.data._embedded.roverList.map(rover => ({
-        ...rover,
-        id: rover.id.toString(),
-        x: parseInt(rover.x),
-        y: parseInt(rover.y)
-      }));
+    try {
+      const response = await axios.get(`${API_BASE_URL}/rovers/1`);
+      return [{
+        id: response.data.id.toString(),
+        position: {
+          x: response.data.x,
+          y: response.data.y
+        },
+        direction: response.data.direction === 'N' ? 'NORTH' :
+                  response.data.direction === 'E' ? 'EAST' :
+                  response.data.direction === 'S' ? 'SOUTH' : 'WEST',
+        status: 'ACTIVE'
+      }];
+    } catch (error) {
+      console.error('Error fetching rovers:', error);
+      throw error;
     }
-    return [];
   },
 
   sendCommand: async (roverId, command) => {
-    const response = await axios.post(`${API_BASE_URL}/rovers/${roverId}/commands`, [command]);
-    return response.data;
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/rovers/${roverId}/command`,
+        command
+      );
+      return {
+        id: response.data.id.toString(),
+        position: {
+          x: response.data.x,
+          y: response.data.y
+        },
+        direction: response.data.direction === 'N' ? 'NORTH' :
+                  response.data.direction === 'E' ? 'EAST' :
+                  response.data.direction === 'S' ? 'SOUTH' : 'WEST',
+        status: 'ACTIVE'
+      };
+    } catch (error) {
+      console.error('Error sending command:', error);
+      throw error;
+    }
   }
 };

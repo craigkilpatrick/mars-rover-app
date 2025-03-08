@@ -27,8 +27,8 @@ const Grid = ({ rovers, selectedRover }) => {
 
   const renderRovers = () => {
     return rovers.map(rover => {
-      const x = rover.x * GRID_CONFIG.cellSize + GRID_CONFIG.cellSize / 2;
-      const y = rover.y * GRID_CONFIG.cellSize + GRID_CONFIG.cellSize / 2;
+      const x = (rover.position?.x || rover.x) * GRID_CONFIG.cellSize + GRID_CONFIG.cellSize / 2;
+      const y = (rover.position?.y || rover.y) * GRID_CONFIG.cellSize + GRID_CONFIG.cellSize / 2;
       const isSelected = selectedRover?.id === rover.id;
 
       return (
@@ -66,15 +66,19 @@ Grid.propTypes = {
   rovers: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      x: PropTypes.number.isRequired,
-      y: PropTypes.number.isRequired,
+      position: PropTypes.shape({
+        x: PropTypes.number.isRequired,
+        y: PropTypes.number.isRequired
+      }),
       direction: PropTypes.string.isRequired
     })
   ).isRequired,
   selectedRover: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired,
+    position: PropTypes.shape({
+      x: PropTypes.number.isRequired,
+      y: PropTypes.number.isRequired
+    }),
     direction: PropTypes.string.isRequired
   })
 };

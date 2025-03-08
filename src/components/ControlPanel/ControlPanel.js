@@ -4,12 +4,10 @@ import PropTypes from 'prop-types';
 const ControlPanel = ({
   rovers,
   selectedRover,
-  commands,
   error,
   isLoading,
   isCommandLoading,
   onRoverSelect,
-  onCommandChange,
   onCommandSubmit
 }) => (
   <div className="control-panel" data-testid="control-panel">
@@ -24,7 +22,7 @@ const ControlPanel = ({
         <option value="">Select a rover</option>
         {rovers.map(rover => (
           <option key={rover.id} value={rover.id}>
-            Rover {rover.id} ({rover.direction} at {rover.x}, {rover.y})
+            Rover {rover.id} ({rover.direction} at {rover.position.x}, {rover.position.y})
           </option>
         ))}
       </select>
@@ -35,7 +33,7 @@ const ControlPanel = ({
         onClick={() => onCommandSubmit('M')}
         disabled={isCommandLoading || !selectedRover}
       >
-        Forward
+        Move Forward
       </button>
       <button
         onClick={() => onCommandSubmit('L')}
@@ -63,29 +61,30 @@ ControlPanel.propTypes = {
   rovers: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      x: PropTypes.number.isRequired,
-      y: PropTypes.number.isRequired,
+      position: PropTypes.shape({
+        x: PropTypes.number.isRequired,
+        y: PropTypes.number.isRequired
+      }).isRequired,
       direction: PropTypes.string.isRequired
     })
   ).isRequired,
   selectedRover: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired,
+    position: PropTypes.shape({
+      x: PropTypes.number.isRequired,
+      y: PropTypes.number.isRequired
+    }).isRequired,
     direction: PropTypes.string.isRequired
   }),
-  commands: PropTypes.string,
   error: PropTypes.string,
   isLoading: PropTypes.bool,
   isCommandLoading: PropTypes.bool,
   onRoverSelect: PropTypes.func.isRequired,
-  onCommandChange: PropTypes.func.isRequired,
   onCommandSubmit: PropTypes.func.isRequired
 };
 
 ControlPanel.defaultProps = {
   selectedRover: null,
-  commands: '',
   error: null,
   isLoading: false,
   isCommandLoading: false

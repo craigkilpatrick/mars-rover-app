@@ -3,6 +3,7 @@ import { roverService } from '../services/api';
 import Grid from './Grid/Grid';
 import ControlPanel from './ControlPanel/ControlPanel';
 import LoadingSpinner from './common/LoadingSpinner/LoadingSpinner';
+import './MarsRoverApp.css';
 
 const MarsRoverApp = () => {
   const [rovers, setRovers] = useState([]);
@@ -45,7 +46,9 @@ const MarsRoverApp = () => {
     setError(null);
     try {
       const updatedRover = await roverService.sendCommand(selectedRover.id, command);
-      setRovers(rovers.map(r => r.id === updatedRover.id ? updatedRover : r));
+      setRovers(prevRovers => 
+        prevRovers.map(r => r.id === updatedRover.id ? updatedRover : r)
+      );
       setSelectedRover(updatedRover);
     } catch (err) {
       setError('Failed to send command');
@@ -61,17 +64,19 @@ const MarsRoverApp = () => {
 
   return (
     <div className="mars-rover-app">
-      <Grid rovers={rovers} selectedRover={selectedRover} />
-      <ControlPanel
-        rovers={rovers}
-        selectedRover={selectedRover}
-        error={error}
-        isLoading={isLoading}
-        isCommandLoading={isCommandLoading}
-        onRoverSelect={handleRoverSelect}
-        onCommandChange={() => {}} // Removed unused command input
-        onCommandSubmit={handleCommandSubmit}
-      />
+      <h1>Mars Rover Mission Control</h1>
+      <div className="app-container">
+        <Grid rovers={rovers} selectedRover={selectedRover} />
+        <ControlPanel
+          rovers={rovers}
+          selectedRover={selectedRover}
+          error={error}
+          isLoading={isLoading}
+          isCommandLoading={isCommandLoading}
+          onRoverSelect={handleRoverSelect}
+          onCommandSubmit={handleCommandSubmit}
+        />
+      </div>
     </div>
   );
 };
