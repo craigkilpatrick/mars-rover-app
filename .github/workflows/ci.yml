@@ -12,6 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    
     - name: Use Node.js
       uses: actions/setup-node@v3
       with:
@@ -22,12 +23,18 @@ jobs:
       run: npm ci
     
     - name: Run tests with coverage
-      run: npm test -- --coverage
+      run: npm run test:coverage
     
-    - name: Upload coverage to Coveralls
-      uses: coverallsapp/github-action@v2
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        directory: ./coverage
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: true
+        verbose: true
 
     - name: Build
       run: npm run build
