@@ -27,14 +27,10 @@ jobs:
         sudo apt-get install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
     
     - name: Install dependencies
-      run: |
-        npm ci
-        npm install -g cross-env
+      run: npm ci
     
     - name: Run tests with coverage
       run: npm run test:coverage
-      env:
-        NODE_OPTIONS: --experimental-vm-modules
     
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
