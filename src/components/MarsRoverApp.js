@@ -73,7 +73,7 @@ const ControlPanel = ({
   onCommandChange, 
   onCommandSubmit 
 }) => (
-  <div style={{ flex: '1' }}>
+  <div style={{ flex: '1' }} data-testid="control-panel">
     <h1 style={{ marginBottom: '20px' }}>Mars Rover Control</h1>
     
     <div style={{ marginBottom: '20px' }}>
@@ -157,7 +157,7 @@ const ControlPanel = ({
     </form>
 
     {error && (
-      <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#ffebee', color: '#c62828', borderRadius: '4px' }}>
+      <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#ffebee', color: '#c62828', borderRadius: '4px' }} data-testid="error-message">
         {error}
       </div>
     )}
@@ -276,9 +276,9 @@ const MarsRoverApp = () => {
   // Fetch rovers from API
   useEffect(() => {
     const fetchRovers = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        setIsLoading(true);
-        setError(null);
         const response = await axios.get(`${API_BASE_URL}/rovers`);
         if (response.data._embedded?.roverList) {
           const transformedRovers = response.data._embedded.roverList.map(rover => ({
@@ -350,6 +350,7 @@ const MarsRoverApp = () => {
 
   return (
     <div style={{ padding: '20px', display: 'flex', gap: '20px' }}>
+      {isLoading && <div data-testid="loading-indicator">Loading...</div>}
       <ControlPanel 
         rovers={rovers}
         selectedRover={selectedRover}
