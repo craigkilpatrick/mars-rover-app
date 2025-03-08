@@ -21,6 +21,11 @@ jobs:
         node-version: '18.x'
         cache: 'npm'
     
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
+    
     - name: Install dependencies
       run: npm ci
     
