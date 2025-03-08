@@ -2,8 +2,6 @@
 
 An interactive web application for controlling and visualizing Mars rovers on a grid-based terrain. Built with React and integrated with a Java Spring Boot backend API.
 
-![Mars Rover App](./mars-rover-preview.png)
-
 ## Features
 
 - Real-time rover control and visualization
