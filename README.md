@@ -1,70 +1,126 @@
-# Getting Started with Create React App
+# Mars Rover Control Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An interactive web application for controlling and visualizing Mars rovers on a grid-based terrain. Built with React and integrated with a Java Spring Boot backend API.
 
-## Available Scripts
+![Mars Rover App](./mars-rover-preview.png)
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- Real-time rover control and visualization
+- Interactive 100x100 grid with Mars-like terrain
+- Simple command interface (forward, backward, left, right)
+- Multiple rover support with individual tracking
+- Visual position and direction indicators
+- Responsive UI with loading states and error handling
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Prerequisites
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Before running the application, ensure you have:
 
-### `npm test`
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+- Java 11 or higher (for the backend API)
+- Maven (for building the backend)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Getting Started
 
-### `npm run build`
+1. **Start the Backend API**
+   ```bash
+   cd mars-rover-api
+   mvn spring-boot:run
+   ```
+   The API will start on http://localhost:8080
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. **Install Frontend Dependencies**
+   ```bash
+   cd mars-rover-app
+   npm install
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. **Start the Frontend Application**
+   ```bash
+   npm start
+   ```
+   The app will open in your browser at http://localhost:3000
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Using the Application
 
-### `npm run eject`
+### Controlling Rovers
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. **Select a Rover**
+   - Use the dropdown menu to select one of the available rovers
+   - Each rover's current position and direction are displayed
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. **Send Commands**
+   - Use the command input to send instructions to the selected rover
+   - Available commands:
+     - `f` - Move Forward
+     - `b` - Move Backward
+     - `l` - Turn Left
+     - `r` - Turn Right
+   - Commands can be chained (e.g., "fflr" to move forward twice, turn left, then right)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+3. **Visual Feedback**
+   - Selected rover is highlighted in gold
+   - Rover direction is indicated by a triangle
+   - Loading spinners show when commands are being processed
+   - Error messages display if something goes wrong
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Grid Navigation
 
-## Learn More
+- The grid is 100x100 cells
+- Rovers wrap around the edges (e.g., moving forward at the top takes you to the bottom)
+- Each rover's position is shown in (x, y) coordinates
+- The grid uses a Mars-like color scheme for better visualization
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Technical Details
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Frontend Stack
+- React 18
+- Konva.js for canvas rendering
+- Axios for API communication
+- PropTypes for type checking
 
-### Code Splitting
+### API Endpoints
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- `GET /rovers` - List all rovers
+- `POST /rovers/{id}/commands` - Send commands to a specific rover
 
-### Analyzing the Bundle Size
+## Development
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Available Scripts
 
-### Making a Progressive Web App
+- `npm start` - Run the development server
+- `npm test` - Run tests
+- `npm run build` - Create production build
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Project Structure
 
-### Advanced Configuration
+```
+src/
+  ├── components/
+  │   └── MarsRoverApp.js    # Main application component
+  ├── App.js                 # Root component
+  ├── index.js              # Entry point
+  └── index.css             # Global styles
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Error Handling
 
-### Deployment
+The application includes comprehensive error handling for:
+- API connection issues
+- Invalid commands
+- Rover selection errors
+- Network timeouts
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Contributing
 
-### `npm run build` fails to minify
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
