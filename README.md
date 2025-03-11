@@ -1,6 +1,6 @@
 # Mars Rover App
 
-A modern React application for controlling multiple Mars rovers on a grid. Built with React, Vite, and Material-UI.
+A modern React application for controlling multiple Mars rovers on a grid. Built with React, Vite, TypeScript, and Material-UI.
 
 ## Features
 
@@ -10,6 +10,7 @@ A modern React application for controlling multiple Mars rovers on a grid. Built
 - 🎯 Visual selection and highlighting of active rover
 - ⌨️ Simple command interface (f,b,l,r)
 - 🔄 Real-time state synchronization
+- 🛡️ Type-safe development with TypeScript
 
 ## Prerequisites
 
@@ -99,9 +100,18 @@ Available endpoints:
 
 This project uses:
 - React for UI components
+- TypeScript for type safety
 - Vite for fast development and building
 - Material-UI for styled components
 - Conventional Commits for version control
+
+### TypeScript Support
+
+The codebase is fully typed with TypeScript, providing:
+- Type-safe component props
+- Strict type checking
+- Interface definitions for API responses
+- Enhanced IDE support and code completion
 
 ## Contributing
 
