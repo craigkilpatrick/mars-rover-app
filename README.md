@@ -104,6 +104,27 @@ This project uses:
 - Vite for fast development and building
 - Material-UI for styled components
 - Conventional Commits for version control
+- Vitest and React Testing Library for testing
+
+### Testing
+
+The application uses Vitest and React Testing Library for comprehensive testing:
+
+#### Test Coverage
+- **RoverGrid Component**
+  - Grid rendering and dimensions (100x100 grid, 5px cells)
+  - Coordinate system validation (0,0 at bottom-left, increasing north/east)
+  - Rover positioning and selection
+  - Visual styling and accessibility
+
+#### Running Tests
+```bash
+# Run tests once
+npm run test:run
+
+# Run tests in watch mode
+npm run test
+```
 
 ### TypeScript Support
 
