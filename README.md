@@ -1,5 +1,12 @@
 # Mars Rover App
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/craigkilpatrick/mars-rover-app/branch/main/graph/badge.svg)](https://codecov.io/gh/craigkilpatrick/mars-rover-app)
+[![Build Status](https://github.com/craigkilpatrick/mars-rover-app/workflows/CI/badge.svg)](https://github.com/craigkilpatrick/mars-rover-app/actions)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue.svg)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.2-blue.svg)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.2-646CFF.svg)](https://vitejs.dev/)
+
 A modern React application for controlling multiple Mars rovers on a grid. Built with React, Vite, TypeScript, and Material-UI.
 
 ## Features
