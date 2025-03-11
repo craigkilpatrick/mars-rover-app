@@ -14,7 +14,7 @@ A modern React application for controlling multiple Mars rovers on a grid. Built
 ## Prerequisites
 
 - Node.js (v14 or higher)
-- Mars Rover API running on port 8080
+- [Mars Rover API](https://github.com/craigkilpatrick/mars-rover-api) running on port 8080
 
 ## Installation
 
@@ -60,7 +60,9 @@ The application will be available at `http://localhost:3000`.
 
 ## API Integration
 
-The application communicates with a Mars Rover API running on `http://localhost:8080` with the following endpoints:
+The application communicates with the [Mars Rover API](https://github.com/craigkilpatrick/mars-rover-api) running on `http://localhost:8080`. Please refer to the API repository for setup instructions.
+
+Available endpoints:
 
 - `GET /rovers` - List all rovers
 - `POST /rovers` - Create new rover
