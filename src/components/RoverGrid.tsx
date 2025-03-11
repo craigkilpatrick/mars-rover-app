@@ -32,11 +32,15 @@ const RoverGrid: React.FC<RoverGridProps> = ({ rovers, selectedRoverId }) => {
 
     // Draw rovers
     rovers.forEach(rover => {
+      // Convert coordinates to canvas position (flip Y axis)
+      const canvasX = rover.x * CELL_SIZE;
+      const canvasY = CANVAS_SIZE - (rover.y + 1) * CELL_SIZE;
+
       // Draw rover body
       ctx.fillStyle = rover.color;
       ctx.fillRect(
-        rover.x * CELL_SIZE,
-        rover.y * CELL_SIZE,
+        canvasX,
+        canvasY,
         CELL_SIZE,
         CELL_SIZE
       );
@@ -44,8 +48,8 @@ const RoverGrid: React.FC<RoverGridProps> = ({ rovers, selectedRoverId }) => {
       // Draw direction indicator
       ctx.fillStyle = 'white';
       ctx.strokeStyle = '#333';
-      const centerX = rover.x * CELL_SIZE + CELL_SIZE/2;
-      const centerY = rover.y * CELL_SIZE + CELL_SIZE/2;
+      const centerX = canvasX + CELL_SIZE/2;
+      const centerY = canvasY + CELL_SIZE/2;
       ctx.beginPath();
       switch(rover.direction) {
         case 'N': ctx.arc(centerX, centerY - 1, 1, 0, Math.PI * 2); break;
@@ -61,8 +65,8 @@ const RoverGrid: React.FC<RoverGridProps> = ({ rovers, selectedRoverId }) => {
         ctx.strokeStyle = '#333';
         ctx.lineWidth = 1;
         ctx.strokeRect(
-          rover.x * CELL_SIZE - 1,
-          rover.y * CELL_SIZE - 1,
+          canvasX - 1,
+          canvasY - 1,
           CELL_SIZE + 2,
           CELL_SIZE + 2
         );
