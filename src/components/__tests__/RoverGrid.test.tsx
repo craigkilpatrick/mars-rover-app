@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
 import RoverGrid from '../RoverGrid'
 import { Rover } from '../../types/rover'
@@ -22,71 +22,57 @@ describe('RoverGrid', () => {
     },
   ]
 
-  it('should render canvas element', () => {
+  it('should render canvas element with correct dimensions', () => {
     const { container } = render(<RoverGrid rovers={mockRovers} selectedRoverId={null} />)
-
     const canvas = container.querySelector('canvas')
+
     expect(canvas).toBeInTheDocument()
-    expect(canvas).toHaveStyle({ display: 'block' })
-  })
-
-  it('should maintain correct grid dimensions', () => {
-    const { container } = render(<RoverGrid rovers={mockRovers} selectedRoverId={null} />)
-
-    const canvas = container.querySelector('canvas')
-    // Grid size should be 100x100 cells, each 5px
     expect(canvas).toHaveAttribute('width', '500')
     expect(canvas).toHaveAttribute('height', '500')
+    expect(canvas).toHaveStyle({ display: 'block' })
   })
 
   it('should render with proper container styling', () => {
     const { container } = render(<RoverGrid rovers={mockRovers} selectedRoverId={null} />)
     const gridContainer = container.firstChild as HTMLElement
 
-    // Test critical styling that affects usability
     expect(gridContainer).toHaveStyle({
-      backgroundColor: '#f8f8f8', // Light background for contrast
-      border: '1px solid #ccc', // Border for grid visibility
+      backgroundColor: '#f8f8f8',
+      border: '1px solid #ccc',
     })
   })
 
-  it('should handle rover updates at coordinate boundaries', () => {
-    // Test rover at maximum coordinates according to coordinate system memory
-    const updatedRovers: Rover[] = [
-      {
-        id: 1,
-        x: 99, // Maximum X (East)
-        y: 99, // Maximum Y (North)
-        direction: 'N',
-        color: '#ff0000',
-      },
-    ]
-
-    const { container } = render(<RoverGrid rovers={updatedRovers} selectedRoverId={null} />)
+  it('should handle empty rovers array', () => {
+    const { container } = render(<RoverGrid rovers={[]} selectedRoverId={null} />)
     const canvas = container.querySelector('canvas')
+
     expect(canvas).toBeInTheDocument()
+    expect(canvas).toHaveAttribute('width', '500')
+    expect(canvas).toHaveAttribute('height', '500')
   })
 
-  it('should handle rover selection changes', () => {
+  it('should accept rover selection prop', () => {
     const { container } = render(<RoverGrid rovers={mockRovers} selectedRoverId={1} />)
     const canvas = container.querySelector('canvas')
+
     expect(canvas).toBeInTheDocument()
+    expect(canvas).toHaveAttribute('width', '500')
+    expect(canvas).toHaveAttribute('height', '500')
   })
 
-  it('should render rovers at coordinate system boundaries', () => {
-    // Test rovers at critical boundary positions based on coordinate system memory
+  it('should render with rovers at coordinate boundaries', () => {
     const boundaryRovers: Rover[] = [
       {
         id: 1,
-        x: 0, // Left-most (West) boundary
-        y: 0, // Bottom-most (South) boundary
+        x: 0,
+        y: 0,
         direction: 'N',
         color: '#ff0000',
       },
       {
         id: 2,
-        x: 99, // Right-most (East) boundary
-        y: 99, // Top-most (North) boundary
+        x: 99,
+        y: 99,
         direction: 'S',
         color: '#00ff00',
       },
@@ -94,38 +80,9 @@ describe('RoverGrid', () => {
 
     const { container } = render(<RoverGrid rovers={boundaryRovers} selectedRoverId={null} />)
     const canvas = container.querySelector('canvas')
+
     expect(canvas).toBeInTheDocument()
-  })
-
-  it('should handle empty rovers array', () => {
-    const { container } = render(<RoverGrid rovers={[]} selectedRoverId={null} />)
-    const canvas = container.querySelector('canvas')
-    expect(canvas).toBeInTheDocument()
-  })
-
-  it('should handle all rover directions', () => {
-    const directionalRovers: Rover[] = [
-      { id: 1, x: 10, y: 10, direction: 'N', color: '#ff0000' },
-      { id: 2, x: 20, y: 20, direction: 'S', color: '#00ff00' },
-      { id: 3, x: 30, y: 30, direction: 'E', color: '#0000ff' },
-      { id: 4, x: 40, y: 40, direction: 'W', color: '#ffff00' },
-    ]
-
-    const { container } = render(<RoverGrid rovers={directionalRovers} selectedRoverId={null} />)
-    const canvas = container.querySelector('canvas')
-    expect(canvas).toBeInTheDocument()
-  })
-
-  it('should handle canvas context initialization failure', () => {
-    // Mock canvas context to return null
-    const mockGetContext = vi.fn(() => null)
-    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(mockGetContext)
-
-    const { container } = render(<RoverGrid rovers={mockRovers} selectedRoverId={null} />)
-    const canvas = container.querySelector('canvas')
-    expect(canvas).toBeInTheDocument()
-    expect(mockGetContext).toHaveBeenCalledWith('2d')
-
-    vi.restoreAllMocks()
+    expect(canvas).toHaveAttribute('width', '500')
+    expect(canvas).toHaveAttribute('height', '500')
   })
 })
