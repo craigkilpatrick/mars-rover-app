@@ -1,21 +1,21 @@
-export type Direction = 'N' | 'S' | 'E' | 'W';
-export type Command = 'f' | 'b' | 'l' | 'r';
+export type Direction = 'N' | 'S' | 'E' | 'W'
+export type Command = 'f' | 'b' | 'l' | 'r'
 
 export interface Rover {
-  id: string;
-  x: number;
-  y: number;
-  direction: Direction;
-  color: string;
+  id: number
+  x: number
+  y: number
+  direction: Direction
+  color: string
 }
 
 export interface RoverResponse {
-  id: string;
-  x: number;
-  y: number;
-  direction: Direction;
+  id: number
+  x: number
+  y: number
+  direction: Direction
   _links?: {
-    self: { href: string };
-    rover: { href: string };
-  };
+    self: { href: string }
+    rovers: { href: string }
+  }
 }

@@ -1,22 +1,14 @@
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemButton,
-  Typography,
-  Button,
-  Stack
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Rover } from '../types/rover';
+import { Box, List, ListItem, ListItemButton, Typography, Button, Stack } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import DeleteIcon from '@mui/icons-material/Delete'
+import { Rover } from '../types/rover'
 
 interface RoverListProps {
-  rovers: Rover[];
-  selectedRoverId: string | null;
-  onSelectRover: (id: string) => void;
-  onAddRover: () => void;
-  onDeleteRover: (id: string) => void;
+  rovers: Rover[]
+  selectedRoverId: number | null
+  onSelectRover: (id: number) => void
+  onAddRover: () => void
+  onDeleteRover: (id: number) => void
 }
 
 const RoverList: React.FC<RoverListProps> = ({
@@ -24,7 +16,7 @@ const RoverList: React.FC<RoverListProps> = ({
   selectedRoverId,
   onSelectRover,
   onAddRover,
-  onDeleteRover
+  onDeleteRover,
 }) => {
   return (
     <Box
@@ -35,15 +27,15 @@ const RoverList: React.FC<RoverListProps> = ({
         borderRadius: 1,
         minWidth: 250,
         display: 'inline-block',
-        verticalAlign: 'top'
+        verticalAlign: 'top',
       }}
     >
       <Typography variant="h6" sx={{ mb: 2 }}>
         Mars Rovers
       </Typography>
-      
+
       <List sx={{ mb: 2 }}>
-        {rovers.map((rover) => (
+        {rovers.map(rover => (
           <ListItem key={rover.id} disablePadding>
             <ListItemButton
               selected={rover.id === selectedRoverId}
@@ -52,7 +44,7 @@ const RoverList: React.FC<RoverListProps> = ({
                 borderRadius: 1,
                 mb: 0.5,
                 display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
               }}
             >
               <Box
@@ -63,7 +55,7 @@ const RoverList: React.FC<RoverListProps> = ({
                   bgcolor: rover.color,
                   border: '1px solid rgba(0,0,0,0.1)',
                   mr: 1,
-                  flexShrink: 0
+                  flexShrink: 0,
                 }}
               />
               <Typography>
@@ -95,7 +87,7 @@ const RoverList: React.FC<RoverListProps> = ({
         </Button>
       </Stack>
     </Box>
-  );
-};
+  )
+}
 
-export default RoverList;
+export default RoverList
