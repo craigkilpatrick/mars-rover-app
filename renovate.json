@@ -17,6 +17,18 @@
     {
       "matchUpdateTypes": ["major"],
       "stabilityDays": 7
+    },
+    {
+      "matchPackageNames": ["react", "react-dom"],
+      "allowedVersions": "<19.0.0"
+    },
+    {
+      "matchPackageNames": ["@types/node"],
+      "allowedVersions": "<22.0.0"
+    },
+    {
+      "matchPackagePatterns": ["^@mui/"],
+      "allowedVersions": "<6.0.0"
     }
   ],
   "timezone": "America/Chicago",
