@@ -1,7 +1,7 @@
 // @ts-check
 
 /** @type {import('@commitlint/types').UserConfig} */
-const config = {
+module.exports = {
   extends: ['@commitlint/config-conventional'],
   rules: {
     'type-enum': [
@@ -24,6 +24,4 @@ const config = {
     'subject-case': [2, 'always', 'lower-case'],
     'body-max-line-length': [2, 'always', 100],
   },
-}
-
-module.exports = config
+};
