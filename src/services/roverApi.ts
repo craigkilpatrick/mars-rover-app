@@ -1,19 +1,89 @@
-import { Rover, RoverResponse, Command } from '../types/rover'
+import { Rover, Direction, Command } from '../types/rover'
 
 const API_BASE_URL = 'http://localhost:8080/rovers'
 
-const generateColor = (): string => {
-  const colors = [
-    '#FF0000',
-    '#00FF00',
-    '#0000FF',
-    '#FFFF00',
-    '#FF00FF',
-    '#00FFFF',
-    '#FFA500',
-    '#800080',
-  ]
-  return colors[Math.floor(Math.random() * colors.length)]
+// Export ROVER_COLORS for testing
+export const ROVER_COLORS = [
+  '#FF6B6B', // Red
+  '#4ECDC4', // Teal
+  '#45B7D1', // Blue
+  '#96CEB4', // Green
+  '#FFEEAD', // Yellow
+  '#D4A5A5', // Pink
+  '#9B59B6', // Purple
+  '#3498DB', // Light Blue
+]
+
+// Validate coordinates are within grid boundaries (0-99)
+const validateCoordinates = (x: number, y: number): boolean => {
+  return x >= 0 && x <= 99 && y >= 0 && y <= 99
+}
+
+// Validate direction is one of N,S,E,W
+const validateDirection = (direction: string): direction is Direction => {
+  return ['N', 'S', 'E', 'W'].includes(direction)
+}
+
+// Validate commands are valid (f,b,l,r)
+const validateCommands = (commands: string[]): commands is Command[] => {
+  if (commands.length === 0) return false
+  return commands.every(cmd => ['f', 'b', 'l', 'r'].includes(cmd))
+}
+
+// Get a color for a rover based on its ID
+const getRoverColor = (id: number): string => {
+  return ROVER_COLORS[id % ROVER_COLORS.length]
+}
+
+interface ApiRover {
+  id: number
+  x: number
+  y: number
+  direction: string
+  _links?: {
+    self?: { href: string }
+    rovers?: { href: string }
+  }
+}
+
+interface HalResponse {
+  _embedded?: {
+    roverList?: ApiRover[]
+  }
+  _links?: {
+    self?: { href: string }
+  }
+}
+
+interface RoverResponse {
+  _embedded?: {
+    rover?: ApiRover
+  }
+  _links?: {
+    self?: { href: string }
+  }
+}
+
+// Convert API rover to frontend rover with color
+const convertApiRover = (apiRover: ApiRover): Rover | null => {
+  if (
+    typeof apiRover.id !== 'number' ||
+    typeof apiRover.x !== 'number' ||
+    typeof apiRover.y !== 'number' ||
+    typeof apiRover.direction !== 'string' ||
+    !validateDirection(apiRover.direction) ||
+    !validateCoordinates(apiRover.x, apiRover.y)
+  ) {
+    return null
+  }
+
+  return {
+    id: apiRover.id,
+    x: apiRover.x,
+    y: apiRover.y,
+    direction: apiRover.direction,
+    color: getRoverColor(apiRover.id),
+  }
 }
 
 export const getRovers = async (): Promise<Rover[]> => {
@@ -22,42 +92,60 @@ export const getRovers = async (): Promise<Rover[]> => {
     if (!response.ok) {
       throw new Error('Failed to fetch rovers')
     }
-    const data = await response.json()
-    const rovers: RoverResponse[] = data._embedded?.roverList || []
-    return rovers.map(rover => ({
-      ...rover,
-      color: generateColor(),
-    }))
+    const data: HalResponse = await response.json()
+
+    // Extract rovers from HAL response
+    const apiRovers = data._embedded?.roverList || []
+
+    // Convert API rovers to frontend rovers with colors
+    return apiRovers.map(convertApiRover).filter((rover): rover is Rover => rover !== null)
   } catch (error) {
     console.error('Error fetching rovers:', error)
-    throw error
+    throw new Error('Failed to fetch rovers')
   }
 }
 
-export const createRover = async (): Promise<Rover> => {
+export const createRover = async (x: number, y: number, direction: Direction): Promise<Rover> => {
   try {
+    // Validate input before making API call
+    if (!validateCoordinates(x, y)) {
+      throw new Error('Invalid coordinates')
+    }
+    if (!validateDirection(direction)) {
+      throw new Error('Invalid direction')
+    }
+
     const response = await fetch(API_BASE_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        x: 0,
-        y: 0,
-        direction: 'N',
-      }),
+      body: JSON.stringify({ x, y, direction }),
     })
+
     if (!response.ok) {
       throw new Error('Failed to create rover')
     }
-    const rover: RoverResponse = await response.json()
-    return {
-      ...rover,
-      color: generateColor(),
+
+    const data: RoverResponse = await response.json()
+    const apiRover = data._embedded?.rover
+
+    if (!apiRover) {
+      throw new Error('Invalid rover data received from server')
     }
+
+    const rover = convertApiRover(apiRover)
+    if (!rover) {
+      throw new Error('Invalid rover data received from server')
+    }
+
+    return rover
   } catch (error) {
     console.error('Error creating rover:', error)
-    throw error
+    if (error instanceof Error) {
+      throw error
+    }
+    throw new Error('Failed to create rover')
   }
 }
 
@@ -66,17 +154,23 @@ export const deleteRover = async (id: number): Promise<void> => {
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: 'DELETE',
     })
+
     if (!response.ok) {
       throw new Error('Failed to delete rover')
     }
   } catch (error) {
     console.error('Error deleting rover:', error)
-    throw error
+    throw new Error('Failed to delete rover')
   }
 }
 
-export const sendCommands = async (id: number, commands: Command[]): Promise<RoverResponse> => {
+export const sendCommands = async (id: number, commands: Command[]): Promise<Rover> => {
   try {
+    // Validate commands before making API call
+    if (!validateCommands(commands)) {
+      throw new Error('Invalid command')
+    }
+
     const response = await fetch(`${API_BASE_URL}/${id}/commands`, {
       method: 'POST',
       headers: {
@@ -84,12 +178,29 @@ export const sendCommands = async (id: number, commands: Command[]): Promise<Rov
       },
       body: JSON.stringify(commands),
     })
+
     if (!response.ok) {
       throw new Error('Failed to send commands')
     }
-    return await response.json()
+
+    const data: RoverResponse = await response.json()
+    const apiRover = data._embedded?.rover
+
+    if (!apiRover) {
+      throw new Error('Invalid rover data received from server')
+    }
+
+    const rover = convertApiRover(apiRover)
+    if (!rover) {
+      throw new Error('Invalid rover data received from server')
+    }
+
+    return rover
   } catch (error) {
     console.error('Error sending commands:', error)
-    throw error
+    if (error instanceof Error) {
+      throw error
+    }
+    throw new Error('Failed to send commands')
   }
 }

@@ -12,17 +12,18 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
-  const selectedRover = rovers.find(rover => rover.id === selectedRoverId)
+  const selectedRover = rovers?.find(rover => rover.id === selectedRoverId) || undefined
 
   const loadRovers = useCallback(async () => {
     try {
       const fetchedRovers = await roverApi.getRovers()
-      setRovers(fetchedRovers)
-      if (fetchedRovers.length > 0 && !selectedRoverId) {
+      setRovers(fetchedRovers || [])
+      if (fetchedRovers?.length > 0 && !selectedRoverId) {
         setSelectedRoverId(fetchedRovers[0].id)
       }
     } catch (error) {
       setError('Failed to load rovers: ' + (error instanceof Error ? error.message : String(error)))
+      setRovers([]) // Reset to empty array on error
     } finally {
       setLoading(false)
     }
@@ -34,9 +35,17 @@ function App() {
 
   const handleAddRover = async () => {
     try {
-      const newRover = await roverApi.createRover()
-      setRovers(prev => [...prev, newRover])
-      setSelectedRoverId(newRover.id)
+      // Start new rovers at a random position within valid boundaries
+      const x = Math.floor(Math.random() * 100)
+      const y = Math.floor(Math.random() * 100)
+      const directions = ['N', 'S', 'E', 'W'] as const
+      const direction = directions[Math.floor(Math.random() * directions.length)]
+
+      const newRover = await roverApi.createRover(x, y, direction)
+      if (newRover) {
+        setRovers(prev => [...prev, newRover])
+        setSelectedRoverId(newRover.id)
+      }
     } catch (error) {
       setError(
         'Failed to create rover: ' + (error instanceof Error ? error.message : String(error))
@@ -64,9 +73,11 @@ function App() {
 
     try {
       const updatedRover = await roverApi.sendCommands(selectedRoverId, commands)
-      setRovers(prev =>
-        prev.map(rover => (rover.id === selectedRoverId ? { ...rover, ...updatedRover } : rover))
-      )
+      if (updatedRover) {
+        setRovers(prev =>
+          prev.map(rover => (rover.id === selectedRoverId ? { ...rover, ...updatedRover } : rover))
+        )
+      }
     } catch (error) {
       setError(
         'Failed to send commands: ' + (error instanceof Error ? error.message : String(error))
