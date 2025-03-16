@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import App from './App'
 import { getRovers, createRover, deleteRover, sendCommands } from './services/roverApi'
 import { ThemeProvider, createTheme } from '@mui/material'
@@ -176,5 +176,90 @@ describe('App', () => {
     await waitFor(() => {
       expect(screen.getByText(/failed to load rovers/i)).toBeInTheDocument()
     })
+  })
+
+  it('should handle rover creation errors', async () => {
+    vi.mocked(createRover).mockRejectedValue(new Error('Failed to create rover'))
+
+    renderWithTheme(<App />)
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    })
+
+    const addButton = screen.getByRole('button', { name: /add new rover/i })
+    fireEvent.click(addButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/failed to create rover/i)).toBeInTheDocument()
+    })
+  })
+
+  it('should handle rover deletion errors', async () => {
+    vi.mocked(deleteRover).mockRejectedValue(new Error('Failed to delete rover'))
+
+    renderWithTheme(<App />)
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    })
+
+    // Select and try to delete a rover
+    const roverElements = screen.getAllByRole('button')
+    const firstRover = roverElements.find(el => el.textContent?.includes('Rover 1'))
+    fireEvent.click(firstRover!)
+
+    const deleteButton = screen.getByRole('button', { name: /delete/i })
+    fireEvent.click(deleteButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/failed to delete rover/i)).toBeInTheDocument()
+    })
+  })
+
+  it('should handle command execution errors', async () => {
+    vi.mocked(sendCommands).mockRejectedValue(new Error('Failed to send commands'))
+
+    renderWithTheme(<App />)
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    })
+
+    // Select a rover and try to send commands
+    const roverElements = screen.getAllByRole('button')
+    const firstRover = roverElements.find(el => el.textContent?.includes('Rover 1'))
+    fireEvent.click(firstRover!)
+
+    const commandInput = screen.getByRole('textbox')
+    fireEvent.change(commandInput, { target: { value: 'f' } })
+
+    const executeButton = screen.getByRole('button', { name: /execute/i })
+    fireEvent.click(executeButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/failed to send commands/i)).toBeInTheDocument()
+    })
+  })
+
+  it('should handle command execution with no selected rover', async () => {
+    // Mock getRovers to return empty array so no rover is selected
+    vi.mocked(getRovers).mockResolvedValue([])
+
+    renderWithTheme(<App />)
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    })
+
+    // Try to send commands without selecting a rover
+    const commandInput = screen.getByRole('textbox')
+    await act(async () => {
+      fireEvent.change(commandInput, { target: { value: 'f' } })
+    })
+
+    const executeButton = screen.getByRole('button', { name: /execute/i })
+    await act(async () => {
+      fireEvent.click(executeButton)
+    })
+
+    // Verify no commands were sent
+    expect(vi.mocked(sendCommands)).not.toHaveBeenCalled()
   })
 })

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import RoverGrid from '../RoverGrid'
 import { Rover } from '../../types/rover'
@@ -95,5 +95,37 @@ describe('RoverGrid', () => {
     const { container } = render(<RoverGrid rovers={boundaryRovers} selectedRoverId={null} />)
     const canvas = container.querySelector('canvas')
     expect(canvas).toBeInTheDocument()
+  })
+
+  it('should handle empty rovers array', () => {
+    const { container } = render(<RoverGrid rovers={[]} selectedRoverId={null} />)
+    const canvas = container.querySelector('canvas')
+    expect(canvas).toBeInTheDocument()
+  })
+
+  it('should handle all rover directions', () => {
+    const directionalRovers: Rover[] = [
+      { id: 1, x: 10, y: 10, direction: 'N', color: '#ff0000' },
+      { id: 2, x: 20, y: 20, direction: 'S', color: '#00ff00' },
+      { id: 3, x: 30, y: 30, direction: 'E', color: '#0000ff' },
+      { id: 4, x: 40, y: 40, direction: 'W', color: '#ffff00' },
+    ]
+
+    const { container } = render(<RoverGrid rovers={directionalRovers} selectedRoverId={null} />)
+    const canvas = container.querySelector('canvas')
+    expect(canvas).toBeInTheDocument()
+  })
+
+  it('should handle canvas context initialization failure', () => {
+    // Mock canvas context to return null
+    const mockGetContext = vi.fn(() => null)
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(mockGetContext)
+
+    const { container } = render(<RoverGrid rovers={mockRovers} selectedRoverId={null} />)
+    const canvas = container.querySelector('canvas')
+    expect(canvas).toBeInTheDocument()
+    expect(mockGetContext).toHaveBeenCalledWith('2d')
+
+    vi.restoreAllMocks()
   })
 })
