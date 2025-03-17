@@ -1,6 +1,7 @@
+/// <reference types="vite/client" />
 import { Rover, Direction, Command } from '../types/rover'
 
-const API_BASE_URL = 'http://localhost:8080/rovers'
+const API_BASE_URL = '/api/rovers'
 
 // Export ROVER_COLORS for testing
 export const ROVER_COLORS = [
@@ -178,13 +179,7 @@ export const sendCommands = async (id: number, commands: Command[]): Promise<Rov
       throw new Error('Failed to send commands')
     }
 
-    const data: RoverResponse = await response.json()
-    const apiRover = data._embedded?.rover
-
-    if (!apiRover) {
-      throw new Error('Invalid rover data received from server')
-    }
-
+    const apiRover: ApiRover = await response.json()
     const rover = convertApiRover(apiRover)
     if (!rover) {
       throw new Error('Invalid rover data received from server')

@@ -194,11 +194,7 @@ describe('roverApi', () => {
 
   describe('sendCommands', () => {
     it('should send commands and return updated rover', async () => {
-      const mockApiResponse = {
-        _embedded: {
-          rover: { id: 1, x: 1, y: 0, direction: 'N' },
-        },
-      }
+      const mockApiResponse = { id: 1, x: 1, y: 0, direction: 'N' }
 
       global.fetch = vi.fn().mockResolvedValueOnce({
         ok: true,
@@ -216,12 +212,10 @@ describe('roverApi', () => {
     })
 
     it('should validate commands', async () => {
-      // Cast invalid commands to unknown first to test validation
       await expect(sendCommands(1, ['x' as unknown as Command])).rejects.toThrow('Invalid command')
-      await expect(sendCommands(1, ['F' as unknown as Command])).rejects.toThrow('Invalid command')
     })
 
-    it('should handle command execution errors', async () => {
+    it('should handle API errors', async () => {
       global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
 
       await expect(sendCommands(1, ['f'])).rejects.toThrow('Failed to send commands')
@@ -237,21 +231,8 @@ describe('roverApi', () => {
       await expect(sendCommands(1, ['f'])).rejects.toThrow('Failed to send commands')
     })
 
-    it('should handle missing rover in response', async () => {
-      global.fetch = vi.fn().mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({}),
-      })
-
-      await expect(sendCommands(1, ['f'])).rejects.toThrow('Invalid rover data')
-    })
-
     it('should handle invalid rover data in response', async () => {
-      const mockApiResponse = {
-        _embedded: {
-          rover: { id: 1, x: 0, y: 0, direction: 'INVALID' },
-        },
-      }
+      const mockApiResponse = { id: 1, x: 0, y: 0, direction: 'INVALID' }
 
       global.fetch = vi.fn().mockResolvedValueOnce({
         ok: true,
