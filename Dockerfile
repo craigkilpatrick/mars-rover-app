@@ -1,5 +1,5 @@
 # Stage 1: Dependencies
-FROM node:20-alpine as deps
+FROM node:20-alpine AS deps
 WORKDIR /app
 
 # Install build dependencies for canvas
@@ -16,7 +16,7 @@ COPY package*.json ./
 RUN npm ci
 
 # Stage 2: Development
-FROM node:20-alpine as development
+FROM node:20-alpine AS development
 WORKDIR /app
 
 # Install runtime dependencies for canvas and debugging tools
@@ -38,14 +38,15 @@ EXPOSE 9229
 CMD ["npm", "run", "dev"]
 
 # Stage 3: Builder
-FROM node:20-alpine as builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
 # Stage 4: Production
-FROM nginx:alpine as production
+FROM nginx:alpine AS production
 COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
