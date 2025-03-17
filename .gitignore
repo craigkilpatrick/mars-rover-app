@@ -7,14 +7,35 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+coverage.json
+*.lcov
+.nyc_output
+
+# Production build
 dist
 dist-ssr
 *.local
+build
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
 .idea
 .DS_Store
 *.suo
@@ -22,3 +43,49 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# TypeScript
+*.tsbuildinfo
+.tscache
+tsconfig.tsbuildinfo
+
+# Vite
+.vite/
+.vitest/
+stats.html
+
+# Cache and temp files
+.cache
+.temp
+.tmp
+*.pem
+.eslintcache
+.stylelintcache
+.npm
+.yarn-integrity
+
+# Debug
+chrome-profiler-events*.json
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Misc
+.DS_Store
+Thumbs.db
+*.bak
+*.swp
+*.swo
+*~
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# IDE-specific files
+.settings/
+.project
+.classpath
+.factorypath
+*.iml
+*.ipr
+*.iws
+.history/
