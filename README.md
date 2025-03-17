@@ -1,4 +1,4 @@
-# Mars Rover App
+# Mars Rover App 🚀
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/craigkilpatrick/mars-rover-app/branch/main/graph/badge.svg)](https://codecov.io/gh/craigkilpatrick/mars-rover-app)
@@ -8,23 +8,23 @@
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF.svg)](https://vitejs.dev/)
 [![Docker](https://img.shields.io/badge/Docker-24.0-2496ED.svg)](https://www.docker.com/)
 
-A React-based web application for controlling Mars rovers. This application provides a user interface to create, control, and monitor rovers on a simulated Martian surface.
+A React-based web application for controlling Mars rovers. This application provides a user interface to create, control, and monitor rovers on a simulated Martian surface. 🌎
 
-## Features
+## Features ✨
 
-- Create and position new rovers
-- Send movement commands to rovers
-- Real-time position tracking
-- Interactive grid visualization
-- HAL+JSON API integration
+- 🚗 Create and position new rovers
+- 🎮 Send movement commands to rovers
+- 📍 Real-time position tracking
+- 🎯 Interactive grid visualization
+- 🔄 HAL+JSON API integration
 
-## Prerequisites
+## Prerequisites 📋
 
-- Docker
-- Make
-- Git
+- 🐳 Docker
+- 🛠️ Make
+- 📦 Git
 
-## Quick Start
+## Quick Start 🚀
 
 1. Clone the repository:
 
@@ -46,38 +46,38 @@ A React-based web application for controlling Mars rovers. This application prov
    make up     # Starts in development mode by default
    ```
 
-## Development
+## Development 👩‍💻
 
-### Available Commands
+### Available Commands 🛠️
 
 Run `make help` to see all available commands. Here are the most common ones:
 
 ```bash
-# Development Commands
+# Development Commands 🔧
 make up           # Start development server (default)
 make down         # Stop all containers
 make lint         # Run code linting
 make format       # Format code
 make test         # Run tests
 
-# Build Commands
+# Build Commands 📦
 make build        # Build the application
 make docker-build # Build production Docker image
 
-# Deployment Commands
+# Deployment Commands 🚀
 make up-dev       # Start development environment
 make up-prod      # Start production environment
 ```
 
-### Development Mode
+### Development Mode 🔧
 
 Development mode provides:
 
-- Hot Module Reloading (HMR)
-- Source maps for debugging
-- Live code updates
-- Development server at http://localhost:3000
-- Node.js debugger on port 9229
+- ⚡ Hot Module Reloading (HMR)
+- 🔍 Source maps for debugging
+- 📝 Live code updates
+- 🌐 Development server at http://localhost:3000
+- 🐛 Node.js debugger on port 9229
 
 To start in development mode:
 
@@ -85,14 +85,14 @@ To start in development mode:
 make up    # or make up-dev
 ```
 
-### Production Mode
+### Production Mode 🏭
 
 Production mode provides:
 
-- Optimized production build
-- Code splitting and chunk optimization
-- Nginx serving static files
-- Production server at http://localhost:80
+- 🔥 Optimized production build
+- 📦 Code splitting and chunk optimization
+- 🚀 Nginx serving static files
+- 🌍 Production server at http://localhost:80
 
 To start in production mode:
 
@@ -100,7 +100,7 @@ To start in production mode:
 make up-prod
 ```
 
-### Switching Between Modes
+### Switching Between Modes 🔄
 
 To switch between development and production:
 
@@ -111,30 +111,30 @@ make up-dev       # Start development mode
 make up-prod      # Start production mode
 ```
 
-## API Integration
+## API Integration 🔌
 
 The application communicates with the Mars Rover API through:
 
-- HAL+JSON format for resource discovery
-- Nginx reverse proxy configuration
-- Automatic network discovery via Docker
+- 📡 HAL+JSON format for resource discovery
+- 🔄 Nginx reverse proxy configuration
+- 🌐 Automatic network discovery via Docker
 
-### API Endpoints
+### API Endpoints 🛣️
 
-- `GET /api/rovers` - List all rovers
-- `POST /api/rovers` - Create a new rover
-- `POST /api/rovers/{id}/commands` - Send commands to a rover
-- `DELETE /api/rovers/{id}` - Delete a rover
+- 📋 `GET /api/rovers` - List all rovers
+- ➕ `POST /api/rovers` - Create a new rover
+- 🎮 `POST /api/rovers/{id}/commands` - Send commands to a rover
+- 🗑️ `DELETE /api/rovers/{id}` - Delete a rover
 
-## Contributing
+## Contributing 🤝
 
-1. Create a feature branch
-2. Make your changes
-3. Run tests: `make test`
-4. Run linting: `make lint`
-5. Format code: `make format`
-6. Submit a pull request
+1. 🌿 Create a feature branch
+2. ✨ Make your changes
+3. 🧪 Run tests: `make test`
+4. 🔍 Run linting: `make lint`
+5. 💅 Format code: `make format`
+6. 📤 Submit a pull request
 
-## License
+## License 📄
 
 MIT License
