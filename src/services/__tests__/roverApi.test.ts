@@ -93,11 +93,7 @@ describe('roverApi', () => {
 
   describe('createRover', () => {
     it('should create and return a new rover', async () => {
-      const mockApiResponse = {
-        _embedded: {
-          rover: { id: 1, x: 0, y: 0, direction: 'N' },
-        },
-      }
+      const mockApiResponse = { id: 1, x: 0, y: 0, direction: 'N' }
 
       global.fetch = vi.fn().mockResolvedValueOnce({
         ok: true,
@@ -151,11 +147,7 @@ describe('roverApi', () => {
     })
 
     it('should handle invalid rover data in response', async () => {
-      const mockApiResponse = {
-        _embedded: {
-          rover: { id: 1, x: 0, y: 0, direction: 'INVALID' },
-        },
-      }
+      const mockApiResponse = { id: 1, x: 0, y: 0, direction: 'INVALID' }
 
       global.fetch = vi.fn().mockResolvedValueOnce({
         ok: true,

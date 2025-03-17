@@ -53,15 +53,6 @@ interface HalResponse {
   }
 }
 
-interface RoverResponse {
-  _embedded?: {
-    rover?: ApiRover
-  }
-  _links?: {
-    self?: { href: string }
-  }
-}
-
 // Convert API rover to frontend rover with color
 const convertApiRover = (apiRover: ApiRover): Rover | null => {
   if (!validateCoordinates(apiRover.x, apiRover.y) || !validateDirection(apiRover.direction)) {
@@ -118,13 +109,7 @@ export const createRover = async (x: number, y: number, direction: Direction): P
       throw new Error('Failed to create rover')
     }
 
-    const data: RoverResponse = await response.json()
-    const apiRover = data._embedded?.rover
-
-    if (!apiRover) {
-      throw new Error('Invalid rover data received from server')
-    }
-
+    const apiRover: ApiRover = await response.json()
     const rover = convertApiRover(apiRover)
     if (!rover) {
       throw new Error('Invalid rover data received from server')
