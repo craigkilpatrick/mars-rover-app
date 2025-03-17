@@ -1,0 +1,21 @@
+services:
+  mars-rover-app:
+    build:
+      context: .
+      target: development
+    container_name: mars-rover-app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://mars-rover-api:8080
+    networks:
+      - mars-rover-network
+
+networks:
+  mars-rover-network:
+    external: true
