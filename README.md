@@ -8,221 +8,133 @@
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF.svg)](https://vitejs.dev/)
 [![Docker](https://img.shields.io/badge/Docker-24.0-2496ED.svg)](https://www.docker.com/)
 
-A modern React application for controlling multiple Mars rovers on a grid. Built with React, Vite, TypeScript, and Material-UI.
+A React-based web application for controlling Mars rovers. This application provides a user interface to create, control, and monitor rovers on a simulated Martian surface.
 
 ## Features
 
-- 🚀 Multiple rover management with unique color identification
-- 🎮 Interactive grid visualization with real-time updates
-- 📱 Modern, responsive UI using Material-UI components
-- 🎯 Visual selection and highlighting of active rover
-- ⌨️ Simple command interface (f,b,l,r)
-- 🔄 Real-time state synchronization
-- 🛡️ Type-safe development with TypeScript
-- 🐳 Docker support for development and production
-- 🔗 HAL-compliant API integration
+- Create and position new rovers
+- Send movement commands to rovers
+- Real-time position tracking
+- Interactive grid visualization
+- HAL+JSON API integration
 
 ## Prerequisites
 
-- Docker and Docker Compose
-  OR
-- Node.js (v14 or higher)
-- [Mars Rover API](https://github.com/craigkilpatrick/mars-rover-api) running on port 8080
+- Docker
+- Make
+- Git
 
-## Installation
-
-### Using Docker (Recommended)
+## Quick Start
 
 1. Clone the repository:
 
-```bash
-git clone git@github.com:craigkilpatrick/mars-rover-app.git
-cd mars-rover-app
-```
-
-2. Start the application:
-
-```bash
-docker compose up -d
-```
-
-The application will be available at `http://localhost:3000`.
-
-### Manual Installation
-
-1. Clone the repository:
-
-```bash
-git clone git@github.com:craigkilpatrick/mars-rover-app.git
-cd mars-rover-app
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Start the development server:
-
-```bash
-npm run dev
-```
-
-## Usage
-
-1. **Adding Rovers**
-
-   - Click "Add New Rover" to create a rover
-   - Each rover appears with a unique color on the grid
-   - New rovers start at position (0,0) facing North
-
-2. **Selecting Rovers**
-
-   - Click on a rover in the list to select it
-   - Selected rover is highlighted on both list and grid
-
-3. **Controlling Rovers**
-
-   - Use the command input to send instructions:
-     - `f`: Move forward
-     - `b`: Move backward
-     - `l`: Turn left
-     - `r`: Turn right
-   - Multiple commands can be sent at once (e.g., "fflr")
-
-4. **Removing Rovers**
-   - Select a rover and click "Delete" to remove it
-
-## API Integration
-
-The application communicates with the [Mars Rover API](https://github.com/craigkilpatrick/mars-rover-api) using HAL (Hypertext Application Language) for hypermedia-driven interaction.
-
-### API Response Formats
-
-1. **Collection Responses (HAL Format)**
-
-   ```json
-   {
-     "_embedded": {
-       "roverList": [
-         {
-           "id": 1,
-           "x": 0,
-           "y": 0,
-           "direction": "N",
-           "_links": {
-             "self": { "href": "/rovers/1" },
-             "rovers": { "href": "/rovers" }
-           }
-         }
-       ]
-     },
-     "_links": {
-       "self": { "href": "/rovers" }
-     }
-   }
+   ```bash
+   git clone <repository-url>
+   cd mars-rover-app
    ```
 
-2. **Individual Resource Responses**
-   ```json
-   {
-     "id": 1,
-     "x": 0,
-     "y": 0,
-     "direction": "N",
-     "_links": {
-       "self": { "href": "/rovers/1" },
-       "rovers": { "href": "/rovers" }
-     }
-   }
+2. Set up environment:
+
+   ```bash
+   make install
    ```
 
-### Available Endpoints
+   This will create a `.env` file from `.env.template`. Review and update the values as needed.
 
-- `GET /rovers` - List all rovers (HAL collection format)
-- `POST /rovers` - Create new rover (direct resource response)
-- `GET /rovers/{id}` - Get specific rover (direct resource response)
-- `DELETE /rovers/{id}` - Delete specific rover
-- `POST /rovers/{id}/commands` - Send commands to rover (direct resource response)
+3. Start the application:
+   ```bash
+   make up     # Starts in development mode by default
+   ```
 
 ## Development
 
-This project uses:
+### Available Commands
 
-- React for UI components
-- TypeScript for type safety
-- Vite for fast development and building
-- Material-UI for styled components
-- Conventional Commits for version control
-- Vitest and React Testing Library for testing
-- Docker for containerization
-
-### Docker Development
-
-The project includes a multi-stage Dockerfile and docker-compose configuration:
-
-- Development mode with hot-reload
-- Production-optimized builds
-- Automatic network configuration
-- Volume mounts for local development
-
-### Testing
-
-The application uses Vitest and React Testing Library for comprehensive testing:
-
-#### Test Coverage
-
-- **API Integration**
-
-  - HAL response handling
-  - Direct resource responses
-  - Error handling and validation
-  - Command processing
-
-- **RoverGrid Component**
-  - Grid rendering and dimensions
-  - Coordinate system validation
-  - Rover positioning and selection
-  - Visual styling and accessibility
-
-#### Running Tests
+Run `make help` to see all available commands. Here are the most common ones:
 
 ```bash
-# In Docker
-docker compose exec mars-rover-app npm run test:run
+# Development Commands
+make up           # Start development server (default)
+make down         # Stop all containers
+make lint         # Run code linting
+make format       # Format code
+make test         # Run tests
 
-# Local Development
-npm run test:run  # Run tests once
-npm run test      # Run tests in watch mode
+# Build Commands
+make build        # Build the application
+make docker-build # Build production Docker image
+
+# Deployment Commands
+make up-dev       # Start development environment
+make up-prod      # Start production environment
 ```
 
-### TypeScript Support
+### Development Mode
 
-The codebase is fully typed with TypeScript, providing:
+Development mode provides:
 
-- Type-safe component props
-- Strict type checking
-- Interface definitions for API responses
-- Enhanced IDE support and code completion
-- HAL response type definitions
+- Hot Module Reloading (HMR)
+- Source maps for debugging
+- Live code updates
+- Development server at http://localhost:3000
+- Node.js debugger on port 9229
+
+To start in development mode:
+
+```bash
+make up    # or make up-dev
+```
+
+### Production Mode
+
+Production mode provides:
+
+- Optimized production build
+- Code splitting and chunk optimization
+- Nginx serving static files
+- Production server at http://localhost:80
+
+To start in production mode:
+
+```bash
+make up-prod
+```
+
+### Switching Between Modes
+
+To switch between development and production:
+
+```bash
+make down         # Stop current environment
+make up-dev       # Start development mode
+# or
+make up-prod      # Start production mode
+```
+
+## API Integration
+
+The application communicates with the Mars Rover API through:
+
+- HAL+JSON format for resource discovery
+- Nginx reverse proxy configuration
+- Automatic network discovery via Docker
+
+### API Endpoints
+
+- `GET /api/rovers` - List all rovers
+- `POST /api/rovers` - Create a new rover
+- `POST /api/rovers/{id}/commands` - Send commands to a rover
+- `DELETE /api/rovers/{id}` - Delete a rover
 
 ## Contributing
 
-1. Create a new branch
+1. Create a feature branch
 2. Make your changes
-3. Submit a pull request
-
-Please follow the conventional commits format (all lowercase):
-
-```
-type(scope): description
-
-Example: feat(rover): add movement validation
-```
+3. Run tests: `make test`
+4. Run linting: `make lint`
+5. Format code: `make format`
+6. Submit a pull request
 
 ## License
 
 MIT License
-
-Created comprehensive README.md with development and production mode documentation
