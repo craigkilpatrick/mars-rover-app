@@ -17,6 +17,9 @@ A React-based web application for controlling Mars rovers. This application prov
 - 📍 Real-time position tracking
 - 🎯 Interactive grid visualization
 - 🔄 HAL+JSON API integration
+- 🚧 Obstacle detection and avoidance
+- 🚫 Visual obstacle representation on grid
+- 📢 Command execution notifications
 
 ## Prerequisites 📋
 
@@ -110,6 +113,38 @@ make up-dev       # Start development mode
 # or
 make up-prod      # Start production mode
 ```
+
+## Features in Detail 📝
+
+### Rover Management
+
+The app allows you to create, control, and delete rovers on the Martian surface. Each rover has a unique color for easy identification on the grid.
+
+### Command System
+
+Send commands to rovers using a simple command language:
+
+- `f`: Move forward one space
+- `b`: Move backward one space
+- `l`: Turn left 90 degrees
+- `r`: Turn right 90 degrees
+
+### Grid System
+
+The Martian surface is represented as a 100x100 grid with wraparound edges. This means rovers that move off one edge of the grid will appear on the opposite edge.
+
+### Obstacle Detection
+
+The system includes obstacle detection to prevent rovers from colliding with obstacles on the Martian surface. When a rover encounters an obstacle:
+
+1. The rover stops before the obstacle
+2. The command sequence is aborted
+3. A notification is displayed to the user
+4. The rover's position is updated to its last valid position
+
+### Obstacle Management
+
+Users can add random obstacles to the grid to test rover navigation and obstacle avoidance capabilities.
 
 ## API Integration 🔌
 
