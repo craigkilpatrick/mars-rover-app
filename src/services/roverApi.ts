@@ -97,16 +97,16 @@ export const getRovers = async (): Promise<Rover[]> => {
 }
 
 export const createRover = async (x: number, y: number, direction: Direction): Promise<Rover> => {
+  // Validate input before making API call
+  if (!validateCoordinates(x, y)) {
+    throw new Error('Invalid coordinates')
+  }
+
+  if (!validateDirection(direction)) {
+    throw new Error('Invalid direction')
+  }
+
   try {
-    // Validate input before making API call
-    if (!validateCoordinates(x, y)) {
-      throw new Error('Invalid coordinates')
-    }
-
-    if (!validateDirection(direction)) {
-      throw new Error('Invalid direction')
-    }
-
     const response = await fetch(API_BASE_URL, {
       method: 'POST',
       headers: {
@@ -123,12 +123,25 @@ export const createRover = async (x: number, y: number, direction: Direction): P
     const rover = convertApiRover(apiRover)
 
     if (!rover) {
-      throw new Error('Invalid rover data received from API')
+      throw new Error('Invalid rover data')
     }
 
     return rover
   } catch (error) {
     console.error('Error creating rover:', error)
+
+    // Re-throw specific error messages
+    if (error instanceof Error) {
+      if (
+        error.message === 'Invalid coordinates' ||
+        error.message === 'Invalid direction' ||
+        error.message === 'Invalid rover data'
+      ) {
+        throw error
+      }
+    }
+
+    // For all other errors, use the generic message
     throw new Error('Failed to create rover')
   }
 }
@@ -152,12 +165,12 @@ export const sendCommands = async (
   id: number,
   commands: Command[]
 ): Promise<{ rover: Rover; obstacleDetected?: boolean; message?: string }> => {
-  try {
-    // Validate commands before making API call
-    if (!validateCommands(commands)) {
-      throw new Error('Invalid commands')
-    }
+  // Validate commands before making API call
+  if (!validateCommands(commands)) {
+    throw new Error('Invalid commands')
+  }
 
+  try {
     const response = await fetch(`${API_BASE_URL}/${id}/commands`, {
       method: 'POST',
       headers: {
@@ -178,7 +191,7 @@ export const sendCommands = async (
       // Return the rover in its current position along with obstacle info
       const rover = convertApiRover(data.rover)
       if (!rover) {
-        throw new Error('Invalid rover data received from API')
+        throw new Error('Invalid rover data')
       }
       return {
         rover,
@@ -190,12 +203,21 @@ export const sendCommands = async (
     // Regular response
     const rover = convertApiRover(data)
     if (!rover) {
-      throw new Error('Invalid rover data received from API')
+      throw new Error('Invalid rover data')
     }
 
     return { rover }
   } catch (error) {
     console.error('Error sending commands:', error)
+
+    // Re-throw specific error messages
+    if (error instanceof Error) {
+      if (error.message === 'Invalid commands' || error.message === 'Invalid rover data') {
+        throw error
+      }
+    }
+
+    // For all other errors, use the generic message
     throw new Error('Failed to send commands')
   }
 }

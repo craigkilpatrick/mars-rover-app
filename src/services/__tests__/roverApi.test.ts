@@ -193,18 +193,43 @@ describe('roverApi', () => {
         json: () => Promise.resolve(mockApiResponse),
       })
 
-      const rover = await sendCommands(1, ['f'])
-      expect(rover).toEqual({
+      const result = await sendCommands(1, ['f'])
+      expect(result.rover).toEqual({
         id: 1,
         x: 1,
         y: 0,
         direction: 'N',
         color: ROVER_COLORS[1],
       })
+      expect(result.obstacleDetected).toBeUndefined()
+    })
+
+    it('should handle obstacle detection response', async () => {
+      const mockApiResponse = {
+        status: 'obstacle-detected',
+        message: 'Obstacle detected at (1,0)',
+        rover: { id: 1, x: 0, y: 0, direction: 'N' },
+      }
+
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockApiResponse),
+      })
+
+      const result = await sendCommands(1, ['f'])
+      expect(result.rover).toEqual({
+        id: 1,
+        x: 0,
+        y: 0,
+        direction: 'N',
+        color: ROVER_COLORS[1],
+      })
+      expect(result.obstacleDetected).toBe(true)
+      expect(result.message).toBe('Obstacle detected at (1,0)')
     })
 
     it('should validate commands', async () => {
-      await expect(sendCommands(1, ['x' as unknown as Command])).rejects.toThrow('Invalid command')
+      await expect(sendCommands(1, ['x' as unknown as Command])).rejects.toThrow('Invalid commands')
     })
 
     it('should handle API errors', async () => {
