@@ -54,17 +54,14 @@ format: deps-check  ## Format code
 	$(DOCKER_RUN_CMD) $(BASE_IMAGE) sh -c "$(DOCKER_RUN_NPM) run format"
 
 #-- Execution Control:
-up: ## Run the application using Docker Compose (development mode)
-	SHA_TAG=$(SHA_TAG) docker compose --profile dev up -d mars-rover-app-dev
-
-up-prod: ## Run the application using Docker Compose (production mode)
-	SHA_TAG=$(SHA_TAG) docker compose --profile prod up -d mars-rover-app-prod
+up: ## Run the application using Docker Compose
+	SHA_TAG=$(SHA_TAG) docker compose up -d mars-rover-app
 
 down: ## Stop the application using Docker Compose, but keep volumes
-	SHA_TAG=$(SHA_TAG) docker compose --profile dev --profile prod down
+	SHA_TAG=$(SHA_TAG) docker compose down
 
 down-v: ## Stop the application using Docker Compose and remove volumes
-	SHA_TAG=$(SHA_TAG) docker compose --profile dev --profile prod down -v
+	SHA_TAG=$(SHA_TAG) docker compose down -v
 
 #-- Development Utilities:
 npm: deps-check ## Run a miscellaneous npm command (e.g. 'make npm install')

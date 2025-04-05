@@ -1,5 +1,5 @@
 services:
-  mars-rover-app-dev:
+  mars-rover-app:
     build:
       context: .
       target: development
@@ -15,20 +15,6 @@ services:
       - NODE_ENV=development
     networks:
       - mars-rover-network
-    profiles:
-      - dev
-
-  mars-rover-app-prod:
-    image: mars-rover-app:${SHA_TAG:-latest}
-    container_name: mars-rover-app
-    ports:
-      - "80:80"
-    environment:
-      - NODE_ENV=production
-    networks:
-      - mars-rover-network
-    profiles:
-      - prod
 
 networks:
   mars-rover-network:
