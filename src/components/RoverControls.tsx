@@ -1,21 +1,14 @@
 import { useState } from 'react'
-import { Box, TextField, Button, Typography, Alert, Paper } from '@mui/material'
+import { Box, TextField, Button, Typography, Paper } from '@mui/material'
 import SendIcon from '@mui/icons-material/Send'
 import { Rover, Command } from '../types/rover'
 
 interface RoverControlsProps {
-  selectedRover: Rover | undefined
+  rover: Rover
   onSendCommands: (commands: Command[]) => void
-  error: string | null
-  onClearError: () => void
 }
 
-const RoverControls: React.FC<RoverControlsProps> = ({
-  selectedRover,
-  onSendCommands,
-  error,
-  onClearError,
-}) => {
+const RoverControls: React.FC<RoverControlsProps> = ({ rover, onSendCommands }) => {
   const [commands, setCommands] = useState<string>('')
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -40,17 +33,11 @@ const RoverControls: React.FC<RoverControlsProps> = ({
               label="Enter commands (f,b,l,r)"
               value={commands}
               onChange={e => setCommands(e.target.value)}
-              disabled={!selectedRover}
               size="small"
               sx={{ flexGrow: 1 }}
               inputProps={{ maxLength: 20 }}
             />
-            <Button
-              type="submit"
-              variant="contained"
-              endIcon={<SendIcon />}
-              disabled={!selectedRover || !commands}
-            >
+            <Button type="submit" variant="contained" endIcon={<SendIcon />} disabled={!commands}>
               Execute
             </Button>
           </Box>
@@ -59,23 +46,11 @@ const RoverControls: React.FC<RoverControlsProps> = ({
         <Typography variant="subtitle2" color="text.secondary" gutterBottom>
           Selected Rover:
         </Typography>
-        {selectedRover ? (
-          <>
-            <Typography>
-              Position: ({selectedRover.x}, {selectedRover.y})
-            </Typography>
-            <Typography>Direction: {selectedRover.direction}</Typography>
-          </>
-        ) : (
-          <Typography color="text.secondary">No rover selected</Typography>
-        )}
+        <Typography>
+          Position: ({rover.x}, {rover.y})
+        </Typography>
+        <Typography>Direction: {rover.direction}</Typography>
       </Paper>
-
-      {error && (
-        <Alert severity="error" onClose={onClearError} sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
     </Box>
   )
 }

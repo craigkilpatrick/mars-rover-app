@@ -1,16 +1,18 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Container, CircularProgress, Box } from '@mui/material'
+import { Container, CircularProgress, Box, Snackbar, Alert, Button } from '@mui/material'
 import RoverGrid from './components/RoverGrid'
 import RoverList from './components/RoverList'
 import RoverControls from './components/RoverControls'
 import * as roverApi from './services/roverApi'
-import { Rover, Command } from './types/rover'
+import { Rover, Command, Obstacle } from './types/rover'
 
 function App() {
   const [rovers, setRovers] = useState<Rover[]>([])
+  const [obstacles, setObstacles] = useState<Obstacle[]>([])
   const [selectedRoverId, setSelectedRoverId] = useState<number | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  const [notification, setNotification] = useState<string | null>(null)
 
   const selectedRover = rovers?.find(rover => rover.id === selectedRoverId) || undefined
 
@@ -24,14 +26,29 @@ function App() {
     } catch (error) {
       setError('Failed to load rovers: ' + (error instanceof Error ? error.message : String(error)))
       setRovers([]) // Reset to empty array on error
-    } finally {
-      setLoading(false)
     }
   }, [selectedRoverId])
 
+  const loadObstacles = useCallback(async () => {
+    try {
+      const fetchedObstacles = await roverApi.getObstacles()
+      setObstacles(fetchedObstacles || [])
+    } catch (error) {
+      console.error('Failed to load obstacles:', error)
+      // Don't set an error state here to avoid blocking the UI
+      // Just log the error and continue with empty obstacles
+      setObstacles([])
+    }
+  }, [])
+
   useEffect(() => {
-    loadRovers()
-  }, [loadRovers])
+    const loadData = async () => {
+      setLoading(true)
+      await Promise.all([loadRovers(), loadObstacles()])
+      setLoading(false)
+    }
+    loadData()
+  }, [loadRovers, loadObstacles])
 
   const handleAddRover = async () => {
     try {
@@ -72,18 +89,41 @@ function App() {
     if (!selectedRoverId) return
 
     try {
-      const updatedRover = await roverApi.sendCommands(selectedRoverId, commands)
-      if (updatedRover) {
+      const result = await roverApi.sendCommands(selectedRoverId, commands)
+
+      // Update rover position
+      if (result.rover) {
         setRovers(prev =>
-          prev.map(rover => (rover.id === selectedRoverId ? { ...rover, ...updatedRover } : rover))
+          prev.map(rover => (rover.id === selectedRoverId ? { ...rover, ...result.rover } : rover))
         )
       }
+
+      // Show obstacle notification if detected
+      if (result.obstacleDetected) {
+        setNotification(result.message || 'Obstacle detected! The rover stopped before hitting it.')
+      }
     } catch (error) {
-      setError(
-        'Failed to send commands: ' + (error instanceof Error ? error.message : String(error))
-      )
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      setError('Failed to send commands: ' + errorMessage)
     }
   }
+
+  const addRandomObstacle = useCallback(async () => {
+    try {
+      // Generate random coordinates
+      const x = Math.floor(Math.random() * 100)
+      const y = Math.floor(Math.random() * 100)
+
+      const newObstacle = await roverApi.createObstacle(x, y)
+
+      if (newObstacle) {
+        setObstacles(prev => [...prev, newObstacle])
+        setNotification(`Added obstacle at (${x}, ${y})`)
+      }
+    } catch (error) {
+      setError('Failed to add random obstacle')
+    }
+  }, [])
 
   if (loading) {
     return (
@@ -102,20 +142,54 @@ function App() {
 
   return (
     <Container maxWidth="lg">
-      <RoverGrid rovers={rovers} selectedRoverId={selectedRoverId} />
-      <RoverList
-        rovers={rovers}
-        selectedRoverId={selectedRoverId}
-        onSelectRover={setSelectedRoverId}
-        onAddRover={handleAddRover}
-        onDeleteRover={handleDeleteRover}
-      />
-      <RoverControls
-        selectedRover={selectedRover}
-        onSendCommands={handleSendCommands}
-        error={error}
-        onClearError={() => setError(null)}
-      />
+      <Box sx={{ my: 4 }}>
+        <h1>Mars Rover Mission Control</h1>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
+
+        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+          <Box sx={{ flexGrow: 1, minWidth: '300px' }}>
+            <RoverGrid rovers={rovers} obstacles={obstacles} selectedRoverId={selectedRoverId} />
+          </Box>
+
+          <Box sx={{ minWidth: '300px' }}>
+            <RoverList
+              rovers={rovers}
+              selectedRoverId={selectedRoverId}
+              onSelectRover={setSelectedRoverId}
+              onAddRover={handleAddRover}
+              onDeleteRover={handleDeleteRover}
+            />
+            <Box sx={{ mt: 2 }}>
+              <Button
+                onClick={addRandomObstacle}
+                variant="contained"
+                color="secondary"
+                sx={{ width: '100%' }}
+              >
+                Add Random Obstacle
+              </Button>
+            </Box>
+            {selectedRover && (
+              <RoverControls rover={selectedRover} onSendCommands={handleSendCommands} />
+            )}
+          </Box>
+        </Box>
+      </Box>
+
+      <Snackbar
+        open={!!notification}
+        autoHideDuration={6000}
+        onClose={() => setNotification(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setNotification(null)} severity="warning">
+          {notification}
+        </Alert>
+      </Snackbar>
     </Container>
   )
 }

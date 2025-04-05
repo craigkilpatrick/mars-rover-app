@@ -1,9 +1,10 @@
 import { useEffect, useRef, useCallback } from 'react'
 import { Box } from '@mui/material'
-import { Rover } from '../types/rover'
+import { Rover, Obstacle } from '../types/rover'
 
 interface RoverGridProps {
   rovers: Rover[]
+  obstacles: Obstacle[]
   selectedRoverId: number | null
 }
 
@@ -11,7 +12,7 @@ const CELL_SIZE = 5
 const GRID_SIZE = 100
 const CANVAS_SIZE = CELL_SIZE * GRID_SIZE
 
-const RoverGrid: React.FC<RoverGridProps> = ({ rovers, selectedRoverId }) => {
+const RoverGrid: React.FC<RoverGridProps> = ({ rovers, obstacles, selectedRoverId }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const drawGrid = useCallback(
@@ -30,6 +31,31 @@ const RoverGrid: React.FC<RoverGridProps> = ({ rovers, selectedRoverId }) => {
         ctx.lineTo(CANVAS_SIZE, i)
         ctx.stroke()
       }
+
+      // Draw obstacles
+      obstacles.forEach(obstacle => {
+        // Convert coordinates to canvas position (flip Y axis)
+        const canvasX = obstacle.x * CELL_SIZE
+        const canvasY = CANVAS_SIZE - (obstacle.y + 1) * CELL_SIZE
+
+        // Draw obstacle as a red X
+        ctx.strokeStyle = '#8B0000' // Dark red
+        ctx.lineWidth = 2
+
+        // Draw X shape
+        ctx.beginPath()
+        ctx.moveTo(canvasX, canvasY)
+        ctx.lineTo(canvasX + CELL_SIZE, canvasY + CELL_SIZE)
+        ctx.stroke()
+
+        ctx.beginPath()
+        ctx.moveTo(canvasX + CELL_SIZE, canvasY)
+        ctx.lineTo(canvasX, canvasY + CELL_SIZE)
+        ctx.stroke()
+
+        // Reset line width
+        ctx.lineWidth = 1
+      })
 
       // Draw rovers
       rovers.forEach(rover => {
@@ -72,7 +98,7 @@ const RoverGrid: React.FC<RoverGridProps> = ({ rovers, selectedRoverId }) => {
         }
       })
     },
-    [rovers, selectedRoverId]
+    [rovers, obstacles, selectedRoverId]
   )
 
   useEffect(() => {

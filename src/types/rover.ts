@@ -9,6 +9,12 @@ export interface Rover {
   color: string
 }
 
+export interface Obstacle {
+  id: number
+  x: number
+  y: number
+}
+
 export interface RoverResponse {
   id: number
   x: number
@@ -18,4 +24,10 @@ export interface RoverResponse {
     self: { href: string }
     rovers: { href: string }
   }
+}
+
+export interface CommandResult {
+  rover: RoverResponse
+  status?: string
+  message?: string
 }
