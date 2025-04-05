@@ -3,6 +3,7 @@ services:
     build:
       context: .
       target: development
+    image: mars-rover-app:${SHA_TAG:-latest}
     container_name: mars-rover-app
     volumes:
       - .:/app
@@ -18,7 +19,7 @@ services:
       - dev
 
   mars-rover-app-prod:
-    image: mars-rover-app:749da86
+    image: mars-rover-app:${SHA_TAG:-latest}
     container_name: mars-rover-app
     ports:
       - "80:80"
