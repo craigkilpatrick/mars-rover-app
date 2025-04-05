@@ -11,8 +11,8 @@ vi.mock('./services/roverApi')
 describe('App', () => {
   const theme = createTheme()
   const mockRovers: Rover[] = [
-    { id: 1, x: 0, y: 0, direction: 'N', color: '#ff0000' },
-    { id: 2, x: 50, y: 50, direction: 'E', color: '#00ff00' },
+    { id: 1, x: 0, y: 0, direction: 'N' as Direction, color: '#ff0000' },
+    { id: 2, x: 50, y: 50, direction: 'E' as Direction, color: '#00ff00' },
   ]
 
   beforeEach(() => {
@@ -21,7 +21,7 @@ describe('App', () => {
     vi.mocked(getRovers).mockResolvedValue(mockRovers)
     vi.mocked(createRover).mockResolvedValue({ ...mockRovers[0], id: 3 })
     vi.mocked(deleteRover).mockResolvedValue()
-    vi.mocked(sendCommands).mockResolvedValue({ ...mockRovers[0], x: 1 })
+    vi.mocked(sendCommands).mockResolvedValue({ rover: { ...mockRovers[0], x: 1 } })
   })
 
   const renderWithTheme = (ui: React.ReactElement) => {
@@ -70,9 +70,13 @@ describe('App', () => {
     // Verify selection is reflected in the UI (Material-UI uses Mui-selected class)
     expect(firstRoverButton).toHaveClass('Mui-selected')
 
-    // Verify the command input is enabled
-    const commandInput = screen.getByRole('textbox')
-    expect(commandInput).not.toBeDisabled()
+    // Wait for the command input to be available after rover selection
+    let commandInput: HTMLElement | null = null
+    await waitFor(() => {
+      commandInput = screen.queryByRole('textbox')
+      expect(commandInput).not.toBeNull()
+      expect(commandInput).not.toBeDisabled()
+    })
   })
 
   it('should handle rover deletion', async () => {
@@ -146,9 +150,15 @@ describe('App', () => {
     const firstRoverButton = within(listItems[0]).getByRole('button')
     fireEvent.click(firstRoverButton)
 
+    // Wait for the command input to be available after rover selection
+    let commandInput: HTMLElement | null = null
+    await waitFor(() => {
+      commandInput = screen.queryByRole('textbox')
+      expect(commandInput).not.toBeNull()
+    })
+
     // Find and fill the command input
-    const commandInput = screen.getByRole('textbox')
-    fireEvent.change(commandInput, { target: { value: 'f' } })
+    fireEvent.change(commandInput!, { target: { value: 'f' } })
 
     // Send the command using the Execute button
     const executeButton = screen.getByRole('button', { name: /execute/i })
@@ -167,7 +177,7 @@ describe('App', () => {
       if (x < 0 || x > 99 || y < 0 || y > 99) {
         throw new Error('Invalid coordinates')
       }
-      return { id: 3, x, y, direction: direction as Direction, color: '#ff0000' }
+      return Promise.resolve({ id: 3, x, y, direction: direction as Direction, color: '#ff0000' })
     })
 
     renderWithTheme(<App />)
@@ -271,8 +281,15 @@ describe('App', () => {
     const firstRoverButton = within(listItems[0]).getByRole('button')
     fireEvent.click(firstRoverButton)
 
-    const commandInput = screen.getByRole('textbox')
-    fireEvent.change(commandInput, { target: { value: 'f' } })
+    // Wait for the command input to be available after rover selection
+    let commandInput: HTMLElement | null = null
+    await waitFor(() => {
+      commandInput = screen.queryByRole('textbox')
+      expect(commandInput).not.toBeNull()
+    })
+
+    // Find and fill the command input
+    fireEvent.change(commandInput!, { target: { value: 'f' } })
 
     const executeButton = screen.getByRole('button', { name: /execute/i })
     fireEvent.click(executeButton)
@@ -284,11 +301,11 @@ describe('App', () => {
 
   it('should handle command execution with no selected rover', async () => {
     // Mock getRovers to return a rover so we can test command execution
-    const mockRover = {
+    const mockRover: Rover = {
       id: 1,
       x: 0,
       y: 0,
-      direction: 'N',
+      direction: 'N' as Direction,
       color: '#ff0000',
     }
     vi.mocked(getRovers).mockResolvedValue([mockRover])
@@ -310,15 +327,27 @@ describe('App', () => {
     const firstRoverButton = within(listItems[0]).getByRole('button')
     fireEvent.click(firstRoverButton)
 
-    // Now we can find the command input
-    const commandInput = screen.getByRole('textbox')
-    await act(async () => {
-      fireEvent.change(commandInput, { target: { value: 'f' } })
+    // Wait for the command input to be available after rover selection
+    let commandInput: HTMLElement | null = null
+    await waitFor(() => {
+      commandInput = screen.queryByRole('textbox')
+      expect(commandInput).not.toBeNull()
     })
 
-    const executeButton = screen.getByRole('button', { name: /execute/i })
+    // Now we can find the command input
     await act(async () => {
-      fireEvent.click(executeButton)
+      fireEvent.change(commandInput!, { target: { value: 'f' } })
+    })
+
+    // Find the execute button
+    let executeButton: HTMLElement | null = null
+    await waitFor(() => {
+      executeButton = screen.queryByRole('button', { name: /execute/i })
+      expect(executeButton).not.toBeNull()
+    })
+
+    await act(async () => {
+      fireEvent.click(executeButton!)
     })
 
     // Verify the command was sent

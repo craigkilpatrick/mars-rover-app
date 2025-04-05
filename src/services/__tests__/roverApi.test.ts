@@ -194,12 +194,14 @@ describe('roverApi', () => {
       })
 
       const result = await sendCommands(1, ['f'])
-      expect(result.rover).toEqual({
-        id: 1,
-        x: 1,
-        y: 0,
-        direction: 'N',
-        color: ROVER_COLORS[1],
+      expect(result).toEqual({
+        rover: {
+          id: 1,
+          x: 1,
+          y: 0,
+          direction: 'N',
+          color: ROVER_COLORS[1],
+        },
       })
       expect(result.obstacleDetected).toBeUndefined()
     })
@@ -217,15 +219,17 @@ describe('roverApi', () => {
       })
 
       const result = await sendCommands(1, ['f'])
-      expect(result.rover).toEqual({
-        id: 1,
-        x: 0,
-        y: 0,
-        direction: 'N',
-        color: ROVER_COLORS[1],
+      expect(result).toEqual({
+        rover: {
+          id: 1,
+          x: 0,
+          y: 0,
+          direction: 'N',
+          color: ROVER_COLORS[1],
+        },
+        obstacleDetected: true,
+        message: 'Obstacle detected at (1,0)',
       })
-      expect(result.obstacleDetected).toBe(true)
-      expect(result.message).toBe('Obstacle detected at (1,0)')
     })
 
     it('should validate commands', async () => {
