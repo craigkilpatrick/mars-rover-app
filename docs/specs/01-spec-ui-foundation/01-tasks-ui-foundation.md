@@ -51,7 +51,7 @@
 
 ## Tasks
 
-### [~] 1.0 Remove MUI and establish the deep-space theme foundation
+### [x] 1.0 Remove MUI and establish the deep-space theme foundation
 
 #### 1.0 Proof Artifact(s)
 
