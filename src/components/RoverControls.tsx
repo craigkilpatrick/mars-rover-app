@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import { Box, TextField, Button, Typography, Paper } from '@mui/material'
-import SendIcon from '@mui/icons-material/Send'
 import { Rover, Command } from '../types/rover'
 
 interface RoverControlsProps {
@@ -25,40 +23,34 @@ const RoverControls: React.FC<RoverControlsProps> = ({ rover, onSendCommands }) 
   }
 
   return (
-    <Box data-testid="rover-controls" sx={{ m: 2 }}>
-      <Paper sx={{ p: 2, mb: 2 }}>
+    <div data-testid="rover-controls">
+      <div>
         <form onSubmit={handleSubmit}>
-          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-            <TextField
-              label="Enter commands (f,b,l,r)"
+          <div>
+            <input
+              type="text"
+              placeholder="Enter commands (f,b,l,r)"
               value={commands}
               onChange={e => setCommands(e.target.value)}
-              size="small"
-              sx={{ flexGrow: 1 }}
-              inputProps={{ maxLength: 20 }}
+              maxLength={20}
             />
-            <Button type="submit" variant="contained" endIcon={<SendIcon />} disabled={!commands}>
+            <button type="submit" disabled={!commands}>
               Execute
-            </Button>
-          </Box>
+            </button>
+          </div>
         </form>
 
-        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-          Selected Rover:
-        </Typography>
-        <Typography data-testid="rover-position">
-          Position: ({rover.x}, {rover.y}) {rover.direction}
-        </Typography>
-        <Button
-          data-testid="move-forward"
-          variant="contained"
-          onClick={() => onSendCommands(['f'])}
-          sx={{ mt: 1 }}
-        >
+        <div>
+          <span>Selected Rover:</span>
+          <span data-testid="rover-position">
+            Position: ({rover.x}, {rover.y}) {rover.direction}
+          </span>
+        </div>
+        <button data-testid="move-forward" onClick={() => onSendCommands(['f'])}>
           Forward
-        </Button>
-      </Paper>
-    </Box>
+        </button>
+      </div>
+    </div>
   )
 }
 

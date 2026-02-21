@@ -2,14 +2,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor, act, within } from '@testing-library/react'
 import App from './App'
 import { getRovers, createRover, deleteRover, sendCommands } from './services/roverApi'
-import { ThemeProvider, createTheme } from '@mui/material'
 import { Direction, Rover } from './types/rover'
 
 // Mock the API module
 vi.mock('./services/roverApi')
 
 describe('App', () => {
-  const theme = createTheme()
   const mockRovers: Rover[] = [
     { id: 1, x: 0, y: 0, direction: 'N' as Direction, color: '#ff0000' },
     { id: 2, x: 50, y: 50, direction: 'E' as Direction, color: '#00ff00' },
@@ -17,26 +15,21 @@ describe('App', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    // Setup default mock implementations
     vi.mocked(getRovers).mockResolvedValue(mockRovers)
     vi.mocked(createRover).mockResolvedValue({ ...mockRovers[0], id: 3 })
     vi.mocked(deleteRover).mockResolvedValue()
     vi.mocked(sendCommands).mockResolvedValue({ rover: { ...mockRovers[0], x: 1 } })
   })
 
-  const renderWithTheme = (ui: React.ReactElement) => {
-    return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
-  }
-
   it('should load and display rovers on mount', async () => {
-    renderWithTheme(<App />)
+    render(<App />)
 
     // Initially should show loading state
-    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    expect(screen.getByTestId('loading')).toBeInTheDocument()
 
     // Wait for rovers to load
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
     // Wait for list items to be available
@@ -49,11 +42,11 @@ describe('App', () => {
   })
 
   it('should handle rover selection', async () => {
-    renderWithTheme(<App />)
+    render(<App />)
 
     // Wait for rovers to load
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
     // Wait for list items to be available
@@ -63,12 +56,12 @@ describe('App', () => {
       expect(listItems.length).toBeGreaterThan(0)
     })
 
-    // Find the button inside the first list item
+    // Find the button inside the first list item and click it
     const firstRoverButton = within(listItems[0]).getByRole('button')
     fireEvent.click(firstRoverButton)
 
-    // Verify selection is reflected in the UI (Material-UI uses Mui-selected class)
-    expect(firstRoverButton).toHaveClass('Mui-selected')
+    // Verify selection is reflected via data-selected attribute
+    expect(firstRoverButton).toHaveAttribute('data-selected', 'true')
 
     // Wait for the command input to be available after rover selection
     let commandInput: HTMLElement | null = null
@@ -80,11 +73,11 @@ describe('App', () => {
   })
 
   it('should handle rover deletion', async () => {
-    renderWithTheme(<App />)
+    render(<App />)
 
     // Wait for rovers to load
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
     // Wait for list items to be available
@@ -94,13 +87,13 @@ describe('App', () => {
       expect(listItems.length).toBeGreaterThan(0)
     })
 
-    // Find the list items and select the first rover
+    // Select the first rover
     const firstRoverButton = within(listItems[0]).getByRole('button')
     fireEvent.click(firstRoverButton)
 
-    // Find and click the delete button (it's the button with the delete icon)
-    const deleteButton = screen.getByTestId('DeleteIcon').closest('button')
-    fireEvent.click(deleteButton!)
+    // Find and click the delete button
+    const deleteButton = screen.getByTestId('delete-rover')
+    fireEvent.click(deleteButton)
 
     // Verify delete API was called
     expect(vi.mocked(deleteRover)).toHaveBeenCalledWith(1)
@@ -114,16 +107,16 @@ describe('App', () => {
   })
 
   it('should create new rovers', async () => {
-    renderWithTheme(<App />)
+    render(<App />)
 
     // Wait for rovers to load
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    // Click the add rover button (it's the button with the add icon)
-    const addButton = screen.getByTestId('AddIcon').closest('button')
-    fireEvent.click(addButton!)
+    // Click the add rover button
+    const addButton = screen.getByRole('button', { name: /add new rover/i })
+    fireEvent.click(addButton)
 
     // Verify a new rover was created
     await waitFor(() => {
@@ -132,11 +125,11 @@ describe('App', () => {
   })
 
   it('should send commands to selected rover', async () => {
-    renderWithTheme(<App />)
+    render(<App />)
 
     // Wait for rovers to load
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
     // Wait for list items to be available
@@ -150,17 +143,17 @@ describe('App', () => {
     const firstRoverButton = within(listItems[0]).getByRole('button')
     fireEvent.click(firstRoverButton)
 
-    // Wait for the command input to be available after rover selection
+    // Wait for the command input
     let commandInput: HTMLElement | null = null
     await waitFor(() => {
       commandInput = screen.queryByRole('textbox')
       expect(commandInput).not.toBeNull()
     })
 
-    // Find and fill the command input
+    // Fill the command input
     fireEvent.change(commandInput!, { target: { value: 'f' } })
 
-    // Send the command using the Execute button
+    // Send the command
     const executeButton = screen.getByRole('button', { name: /execute/i })
     fireEvent.click(executeButton)
 
@@ -171,27 +164,22 @@ describe('App', () => {
   })
 
   it('should respect coordinate system boundaries', async () => {
-    // Mock createRover to simulate boundary positions
     vi.mocked(createRover).mockImplementation(async (x: number, y: number, direction: string) => {
-      // Validate coordinates are within bounds
       if (x < 0 || x > 99 || y < 0 || y > 99) {
         throw new Error('Invalid coordinates')
       }
       return Promise.resolve({ id: 3, x, y, direction: direction as Direction, color: '#ff0000' })
     })
 
-    renderWithTheme(<App />)
+    render(<App />)
 
-    // Wait for rovers to load
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    // Add a new rover (which will use random coordinates)
     const addButton = screen.getByRole('button', { name: /add new rover/i })
     fireEvent.click(addButton)
 
-    // Verify the new rover was created with valid coordinates
     await waitFor(() => {
       const call = vi.mocked(createRover).mock.calls[0]
       const [x, y] = call
@@ -203,12 +191,10 @@ describe('App', () => {
   })
 
   it('should handle API errors gracefully', async () => {
-    // Mock API error
     vi.mocked(getRovers).mockRejectedValue(new Error('Failed to fetch rovers'))
 
-    renderWithTheme(<App />)
+    render(<App />)
 
-    // Wait for error to be displayed
     await waitFor(() => {
       expect(screen.getByText(/failed to load rovers/i)).toBeInTheDocument()
     })
@@ -217,9 +203,9 @@ describe('App', () => {
   it('should handle rover creation errors', async () => {
     vi.mocked(createRover).mockRejectedValue(new Error('Failed to create rover'))
 
-    renderWithTheme(<App />)
+    render(<App />)
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
     const addButton = screen.getByRole('button', { name: /add new rover/i })
@@ -233,27 +219,23 @@ describe('App', () => {
   it('should handle rover deletion errors', async () => {
     vi.mocked(deleteRover).mockRejectedValue(new Error('Failed to delete rover'))
 
-    renderWithTheme(<App />)
+    render(<App />)
 
-    // Wait for rovers to load
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    // Wait for list items to be available
     let listItems: HTMLElement[] = []
     await waitFor(() => {
       listItems = screen.getAllByRole('listitem')
       expect(listItems.length).toBeGreaterThan(0)
     })
 
-    // Select and try to delete a rover
     const firstRoverButton = within(listItems[0]).getByRole('button')
     fireEvent.click(firstRoverButton)
 
-    // Find and click the delete button (it's the button with the delete icon)
-    const deleteButton = screen.getByTestId('DeleteIcon').closest('button')
-    fireEvent.click(deleteButton!)
+    const deleteButton = screen.getByTestId('delete-rover')
+    fireEvent.click(deleteButton)
 
     await waitFor(() => {
       expect(screen.getByText(/failed to delete rover/i)).toBeInTheDocument()
@@ -263,32 +245,27 @@ describe('App', () => {
   it('should handle command execution errors', async () => {
     vi.mocked(sendCommands).mockRejectedValue(new Error('Failed to send commands'))
 
-    renderWithTheme(<App />)
+    render(<App />)
 
-    // Wait for rovers to load
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    // Wait for list items to be available
     let listItems: HTMLElement[] = []
     await waitFor(() => {
       listItems = screen.getAllByRole('listitem')
       expect(listItems.length).toBeGreaterThan(0)
     })
 
-    // Select a rover and try to send commands
     const firstRoverButton = within(listItems[0]).getByRole('button')
     fireEvent.click(firstRoverButton)
 
-    // Wait for the command input to be available after rover selection
     let commandInput: HTMLElement | null = null
     await waitFor(() => {
       commandInput = screen.queryByRole('textbox')
       expect(commandInput).not.toBeNull()
     })
 
-    // Find and fill the command input
     fireEvent.change(commandInput!, { target: { value: 'f' } })
 
     const executeButton = screen.getByRole('button', { name: /execute/i })
@@ -300,7 +277,6 @@ describe('App', () => {
   })
 
   it('should handle command execution with no selected rover', async () => {
-    // Mock getRovers to return a rover so we can test command execution
     const mockRover: Rover = {
       id: 1,
       x: 0,
@@ -310,12 +286,11 @@ describe('App', () => {
     }
     vi.mocked(getRovers).mockResolvedValue([mockRover])
 
-    renderWithTheme(<App />)
+    render(<App />)
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    // Wait for list items to be available
     let listItems: HTMLElement[] = []
     await waitFor(() => {
       listItems = screen.getAllByRole('listitem')
@@ -323,23 +298,19 @@ describe('App', () => {
       expect(listItems[0].textContent).toContain('Rover 1')
     })
 
-    // Select the rover
     const firstRoverButton = within(listItems[0]).getByRole('button')
     fireEvent.click(firstRoverButton)
 
-    // Wait for the command input to be available after rover selection
     let commandInput: HTMLElement | null = null
     await waitFor(() => {
       commandInput = screen.queryByRole('textbox')
       expect(commandInput).not.toBeNull()
     })
 
-    // Now we can find the command input
     await act(async () => {
       fireEvent.change(commandInput!, { target: { value: 'f' } })
     })
 
-    // Find the execute button
     let executeButton: HTMLElement | null = null
     await waitFor(() => {
       executeButton = screen.queryByRole('button', { name: /execute/i })
@@ -350,7 +321,6 @@ describe('App', () => {
       fireEvent.click(executeButton!)
     })
 
-    // Verify the command was sent
     expect(vi.mocked(sendCommands)).toHaveBeenCalledWith(1, ['f'])
   })
 })

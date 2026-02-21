@@ -1,5 +1,4 @@
 import { useEffect, useRef, useCallback } from 'react'
-import { Box } from '@mui/material'
 import { Rover, Obstacle } from '../types/rover'
 
 interface RoverGridProps {
@@ -112,9 +111,9 @@ const RoverGrid: React.FC<RoverGridProps> = ({ rovers, obstacles, selectedRoverI
   }, [drawGrid])
 
   return (
-    <Box
+    <div
       data-testid="rover-grid"
-      sx={{
+      style={{
         width: CANVAS_SIZE,
         height: CANVAS_SIZE,
         position: 'relative',
@@ -122,7 +121,7 @@ const RoverGrid: React.FC<RoverGridProps> = ({ rovers, obstacles, selectedRoverI
       }}
     >
       <canvas ref={canvasRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
-    </Box>
+    </div>
   )
 }
 

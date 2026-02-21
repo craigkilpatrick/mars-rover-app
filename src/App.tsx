@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Container, CircularProgress, Box, Snackbar, Alert, Button } from '@mui/material'
 import RoverGrid from './components/RoverGrid'
 import RoverList from './components/RoverList'
 import RoverControls from './components/RoverControls'
@@ -25,7 +24,7 @@ function App() {
       }
     } catch (error) {
       setError('Failed to load rovers: ' + (error instanceof Error ? error.message : String(error)))
-      setRovers([]) // Reset to empty array on error
+      setRovers([])
     }
   }, [selectedRoverId])
 
@@ -35,8 +34,6 @@ function App() {
       setObstacles(fetchedObstacles || [])
     } catch (error) {
       console.error('Failed to load obstacles:', error)
-      // Don't set an error state here to avoid blocking the UI
-      // Just log the error and continue with empty obstacles
       setObstacles([])
     }
   }, [])
@@ -52,7 +49,6 @@ function App() {
 
   const handleAddRover = async () => {
     try {
-      // Start new rovers at a random position within valid boundaries
       const x = Math.floor(Math.random() * 100)
       const y = Math.floor(Math.random() * 100)
       const directions = ['N', 'S', 'E', 'W'] as const
@@ -91,14 +87,12 @@ function App() {
     try {
       const result = await roverApi.sendCommands(selectedRoverId, commands)
 
-      // Update rover position
       if (result.rover) {
         setRovers(prev =>
           prev.map(rover => (rover.id === selectedRoverId ? { ...rover, ...result.rover } : rover))
         )
       }
 
-      // Show obstacle notification if detected
       if (result.obstacleDetected) {
         setNotification(result.message || 'Obstacle detected! The rover stopped before hitting it.')
       }
@@ -110,7 +104,6 @@ function App() {
 
   const addRandomObstacle = useCallback(async () => {
     try {
-      // Generate random coordinates
       const x = Math.floor(Math.random() * 100)
       const y = Math.floor(Math.random() * 100)
 
@@ -126,71 +119,42 @@ function App() {
   }, [])
 
   if (loading) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    )
+    return <div data-testid="loading">Loading...</div>
   }
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ my: 4 }}>
-        <h1>Mars Rover Mission Control</h1>
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-            {error}
-          </Alert>
-        )}
+    <div>
+      {error && (
+        <div data-testid="error-banner">
+          {error}
+          <button onClick={() => setError(null)}>Dismiss</button>
+        </div>
+      )}
 
-        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-          <Box sx={{ flexGrow: 1, minWidth: '300px' }}>
-            <RoverGrid rovers={rovers} obstacles={obstacles} selectedRoverId={selectedRoverId} />
-          </Box>
+      <div>
+        <div>
+          <RoverGrid rovers={rovers} obstacles={obstacles} selectedRoverId={selectedRoverId} />
+        </div>
 
-          <Box sx={{ minWidth: '300px' }}>
-            <RoverList
-              rovers={rovers}
-              selectedRoverId={selectedRoverId}
-              onSelectRover={setSelectedRoverId}
-              onAddRover={handleAddRover}
-              onDeleteRover={handleDeleteRover}
-            />
-            <Box sx={{ mt: 2 }}>
-              <Button
-                onClick={addRandomObstacle}
-                variant="contained"
-                color="secondary"
-                sx={{ width: '100%' }}
-              >
-                Add Random Obstacle
-              </Button>
-            </Box>
-            {selectedRover && (
-              <RoverControls rover={selectedRover} onSendCommands={handleSendCommands} />
-            )}
-          </Box>
-        </Box>
-      </Box>
+        <div>
+          <RoverList
+            rovers={rovers}
+            selectedRoverId={selectedRoverId}
+            onSelectRover={setSelectedRoverId}
+            onAddRover={handleAddRover}
+            onDeleteRover={handleDeleteRover}
+          />
+          <div>
+            <button onClick={addRandomObstacle}>Add Random Obstacle</button>
+          </div>
+          {selectedRover && (
+            <RoverControls rover={selectedRover} onSendCommands={handleSendCommands} />
+          )}
+        </div>
+      </div>
 
-      <Snackbar
-        open={!!notification}
-        autoHideDuration={6000}
-        onClose={() => setNotification(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={() => setNotification(null)} severity="warning">
-          {notification}
-        </Alert>
-      </Snackbar>
-    </Container>
+      {notification && <div data-testid="notification">{notification}</div>}
+    </div>
   )
 }
 
