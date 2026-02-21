@@ -176,7 +176,7 @@ onClick={() => onDeleteRover(selectedRoverId!)} disabled={!selectedRoverId}>Dele
 
 ---
 
-### [ ] 2.0 Restructure app layout to full-screen canvas with floating HUD shell
+### [x] 2.0 Restructure app layout to full-screen canvas with floating HUD shell
 
 #### 2.0 Proof Artifact(s)
 
@@ -189,7 +189,7 @@ onClick={() => onDeleteRover(selectedRoverId!)} disabled={!selectedRoverId}>Dele
 
 #### 2.0 Tasks
 
-- [ ] 2.1 Add a `ResizeObserver` global mock to `src/test/setup.ts` so jsdom tests don't throw:
+- [x] 2.1 Add a `ResizeObserver` global mock to `src/test/setup.ts` so jsdom tests don't throw:
 
   ```ts
   global.ResizeObserver = class ResizeObserver {
@@ -199,7 +199,7 @@ onClick={() => onDeleteRover(selectedRoverId!)} disabled={!selectedRoverId}>Dele
   }
   ```
 
-- [ ] 2.2 Update `src/components/RoverGrid.tsx` — add dynamic canvas sizing:
+- [x] 2.2 Update `src/components/RoverGrid.tsx` — add dynamic canvas sizing:
 
   - Add a `containerRef = useRef<HTMLDivElement>(null)` on the outer wrapper `<div>`
   - Add a `useEffect` that creates a `ResizeObserver` on `containerRef.current`. In its callback,
@@ -209,7 +209,7 @@ onClick={() => onDeleteRover(selectedRoverId!)} disabled={!selectedRoverId}>Dele
   - Remove the hard-coded `width={500} height={500}` attributes from the `<canvas>` element.
     The canvas dimensions are now set by the `ResizeObserver` only.
 
-- [ ] 2.3 Update `src/components/__tests__/RoverGrid.test.tsx`:
+- [x] 2.3 Update `src/components/__tests__/RoverGrid.test.tsx`:
 
   - Remove all `toHaveAttribute('width', '500')` and `toHaveAttribute('height', '500')` assertions
     (the `ResizeObserver` mock returns 0-size in jsdom, so the canvas has no fixed dimensions)
@@ -218,7 +218,7 @@ onClick={() => onDeleteRover(selectedRoverId!)} disabled={!selectedRoverId}>Dele
   - All other test cases (empty rovers, selected rover, boundary coords) need only verify that
     the `<canvas>` element exists — no dimension assertions
 
-- [ ] 2.4 Create `src/components/TopBar.tsx`:
+- [x] 2.4 Create `src/components/TopBar.tsx`:
 
   - A `fixed` bar: `className="fixed top-0 left-0 right-0 h-12 z-50 flex items-center
 justify-between px-4 border-b border-white/[0.08] backdrop-blur-md bg-surface/80"`
@@ -230,13 +230,13 @@ justify-between px-4 border-b border-white/[0.08] backdrop-blur-md bg-surface/80
     - Disconnected: `<span className="text-destructive">● DISCONNECTED</span>`
   - Props interface: `TopBarProps { isConnected: boolean }`
 
-- [ ] 2.5 Create `src/hooks/useApiHealth.ts`:
+- [x] 2.5 Create `src/hooks/useApiHealth.ts`:
 
   - A custom hook that runs a `GET /api/rovers` fetch on mount (inside a `useEffect`)
   - Returns `{ isConnected: boolean }` — `true` if the fetch resolves, `false` if it rejects
   - Uses `useState(false)` for initial disconnected state until the check completes
 
-- [ ] 2.6 Restructure `src/App.tsx` layout:
+- [x] 2.6 Restructure `src/App.tsx` layout:
 
   - Change the root `<div>` to `className="relative h-screen w-screen overflow-hidden bg-background"`
   - Add `<RoverGrid>` as the first child so it fills the full viewport behind everything else
@@ -250,13 +250,13 @@ border-l border-white/[0.08] backdrop-blur-md bg-surface/80" />` — empty for n
   - Keep all state, callbacks, and the notification/error logic (still as plain `<div>` stubs
     from Task 1.0 — toast wiring comes in Task 4.0)
 
-- [ ] 2.7 Create `src/components/__tests__/TopBar.test.tsx`:
+- [x] 2.7 Create `src/components/__tests__/TopBar.test.tsx`:
 
   - Test 1: renders "MISSION CONTROL" text when given any props
   - Test 2: renders "CONNECTED" with green indicator when `isConnected={true}`
   - Test 3: renders "DISCONNECTED" with red indicator when `isConnected={false}`
 
-- [ ] 2.8 Run `make type-check && make lint && make test:run`. Fix any errors before
+- [x] 2.8 Run `make type-check && make lint && make test:run`. Fix any errors before
       proceeding to Task 3.0.
 
 ---

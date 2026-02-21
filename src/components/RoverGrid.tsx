@@ -8,40 +8,38 @@ interface RoverGridProps {
 }
 
 const CELL_SIZE = 5
-const GRID_SIZE = 100
-const CANVAS_SIZE = CELL_SIZE * GRID_SIZE
 
 const RoverGrid: React.FC<RoverGridProps> = ({ rovers, obstacles, selectedRoverId }) => {
+  const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const drawGrid = useCallback(
-    (ctx: CanvasRenderingContext2D) => {
-      ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+    (ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number) => {
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight)
 
       // Draw grid lines
       ctx.strokeStyle = '#ccc'
-      for (let i = 0; i <= CANVAS_SIZE; i += CELL_SIZE) {
+      for (let i = 0; i <= canvasWidth; i += CELL_SIZE) {
         ctx.beginPath()
         ctx.moveTo(i, 0)
-        ctx.lineTo(i, CANVAS_SIZE)
+        ctx.lineTo(i, canvasHeight)
         ctx.stroke()
+      }
+      for (let i = 0; i <= canvasHeight; i += CELL_SIZE) {
         ctx.beginPath()
         ctx.moveTo(0, i)
-        ctx.lineTo(CANVAS_SIZE, i)
+        ctx.lineTo(canvasWidth, i)
         ctx.stroke()
       }
 
       // Draw obstacles
       obstacles.forEach(obstacle => {
-        // Convert coordinates to canvas position (flip Y axis)
         const canvasX = obstacle.x * CELL_SIZE
-        const canvasY = CANVAS_SIZE - (obstacle.y + 1) * CELL_SIZE
+        const canvasY = canvasHeight - (obstacle.y + 1) * CELL_SIZE
 
-        // Draw obstacle as a red X
-        ctx.strokeStyle = '#8B0000' // Dark red
+        ctx.strokeStyle = '#8B0000'
         ctx.lineWidth = 2
 
-        // Draw X shape
         ctx.beginPath()
         ctx.moveTo(canvasX, canvasY)
         ctx.lineTo(canvasX + CELL_SIZE, canvasY + CELL_SIZE)
@@ -52,21 +50,17 @@ const RoverGrid: React.FC<RoverGridProps> = ({ rovers, obstacles, selectedRoverI
         ctx.lineTo(canvasX, canvasY + CELL_SIZE)
         ctx.stroke()
 
-        // Reset line width
         ctx.lineWidth = 1
       })
 
       // Draw rovers
       rovers.forEach(rover => {
-        // Convert coordinates to canvas position (flip Y axis)
         const canvasX = rover.x * CELL_SIZE
-        const canvasY = CANVAS_SIZE - (rover.y + 1) * CELL_SIZE
+        const canvasY = canvasHeight - (rover.y + 1) * CELL_SIZE
 
-        // Draw rover body
         ctx.fillStyle = rover.color
         ctx.fillRect(canvasX, canvasY, CELL_SIZE, CELL_SIZE)
 
-        // Draw direction indicator
         ctx.fillStyle = 'white'
         ctx.strokeStyle = '#333'
         const centerX = canvasX + CELL_SIZE / 2
@@ -89,7 +83,6 @@ const RoverGrid: React.FC<RoverGridProps> = ({ rovers, obstacles, selectedRoverI
         ctx.fill()
         ctx.stroke()
 
-        // Highlight selected rover
         if (rover.id === selectedRoverId) {
           ctx.strokeStyle = '#333'
           ctx.lineWidth = 1
@@ -100,27 +93,38 @@ const RoverGrid: React.FC<RoverGridProps> = ({ rovers, obstacles, selectedRoverI
     [rovers, obstacles, selectedRoverId]
   )
 
+  // ResizeObserver: keep canvas dimensions in sync with container
+  useEffect(() => {
+    const container = containerRef.current
+    const canvas = canvasRef.current
+    if (!container || !canvas) return
+
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        if (ctx) drawGrid(ctx, width, height)
+      }
+    })
+
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [drawGrid])
+
+  // Initial draw when props change (ResizeObserver handles resize redraws)
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-
-    drawGrid(ctx)
+    drawGrid(ctx, canvas.width, canvas.height)
   }, [drawGrid])
 
   return (
-    <div
-      data-testid="rover-grid"
-      style={{
-        width: CANVAS_SIZE,
-        height: CANVAS_SIZE,
-        position: 'relative',
-        border: '1px solid #ccc',
-      }}
-    >
-      <canvas ref={canvasRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
+    <div ref={containerRef} data-testid="rover-grid" className="w-full h-full">
+      <canvas ref={canvasRef} />
     </div>
   )
 }

@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import RoverGrid from './components/RoverGrid'
 import RoverList from './components/RoverList'
 import RoverControls from './components/RoverControls'
+import TopBar from './components/TopBar'
+import { useApiHealth } from './hooks/useApiHealth'
 import * as roverApi from './services/roverApi'
 import { Rover, Command, Obstacle } from './types/rover'
 
@@ -13,6 +15,7 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [notification, setNotification] = useState<string | null>(null)
 
+  const { isConnected } = useApiHealth()
   const selectedRover = rovers?.find(rover => rover.id === selectedRoverId) || undefined
 
   const loadRovers = useCallback(async () => {
@@ -123,36 +126,49 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="relative h-screen w-screen overflow-hidden bg-background">
+      {/* Full-viewport canvas as backdrop */}
+      <RoverGrid rovers={rovers} obstacles={obstacles} selectedRoverId={selectedRoverId} />
+
+      {/* Fixed top bar overlay */}
+      <TopBar isConnected={isConnected} />
+
+      {/* Left HUD panel — Rover Fleet (empty slot for Task 3.0) */}
+      <div
+        className="fixed left-0 top-12 w-60 h-[calc(100vh-3rem)] border-r backdrop-blur-md overflow-y-auto"
+        style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(15,17,23,0.8)' }}
+      >
+        <RoverList
+          rovers={rovers}
+          selectedRoverId={selectedRoverId}
+          onSelectRover={setSelectedRoverId}
+          onAddRover={handleAddRover}
+          onDeleteRover={handleDeleteRover}
+        />
+      </div>
+
+      {/* Right HUD panel — Mission HQ (empty slot for Task 4.0) */}
+      <div
+        className="fixed right-0 top-12 w-72 h-[calc(100vh-3rem)] border-l backdrop-blur-md overflow-y-auto"
+        style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(15,17,23,0.8)' }}
+      >
+        <div className="p-3">
+          <button onClick={addRandomObstacle} className="w-full text-xs">
+            Add Random Obstacle
+          </button>
+        </div>
+        {selectedRover && (
+          <RoverControls rover={selectedRover} onSendCommands={handleSendCommands} />
+        )}
+      </div>
+
+      {/* Temporary error/notification stubs (replaced by toasts in Task 4.0) */}
       {error && (
         <div data-testid="error-banner">
           {error}
           <button onClick={() => setError(null)}>Dismiss</button>
         </div>
       )}
-
-      <div>
-        <div>
-          <RoverGrid rovers={rovers} obstacles={obstacles} selectedRoverId={selectedRoverId} />
-        </div>
-
-        <div>
-          <RoverList
-            rovers={rovers}
-            selectedRoverId={selectedRoverId}
-            onSelectRover={setSelectedRoverId}
-            onAddRover={handleAddRover}
-            onDeleteRover={handleDeleteRover}
-          />
-          <div>
-            <button onClick={addRandomObstacle}>Add Random Obstacle</button>
-          </div>
-          {selectedRover && (
-            <RoverControls rover={selectedRover} onSendCommands={handleSendCommands} />
-          )}
-        </div>
-      </div>
-
       {notification && <div data-testid="notification">{notification}</div>}
     </div>
   )
