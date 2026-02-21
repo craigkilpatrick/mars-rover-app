@@ -1,5 +1,5 @@
 # Stage 1: Dependencies
-FROM node:20-alpine AS deps
+FROM node:20.20.0-alpine AS deps
 WORKDIR /app
 
 # Install build dependencies for canvas
@@ -16,7 +16,7 @@ COPY package*.json ./
 RUN npm ci
 
 # Stage 2: Development
-FROM node:20-alpine AS development
+FROM node:20.20.0-alpine AS development
 WORKDIR /app
 
 # Install runtime dependencies for canvas and debugging tools
@@ -38,7 +38,7 @@ EXPOSE 9229
 CMD ["npm", "run", "dev"]
 
 # Stage 3: Builder
-FROM node:20-alpine AS builder
+FROM node:20.20.0-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
