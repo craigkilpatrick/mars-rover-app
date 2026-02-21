@@ -86,6 +86,25 @@ export default [
       },
     },
   },
+  // Playwright config
+  {
+    files: ['playwright.config.ts', 'tests/**/*.ts'],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+      globals: {
+        ...globals.node,
+        ...globals.es2020,
+      },
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      ...typescript.configs['recommended'].rules,
+    },
+  },
   // Test files
   {
     files: ['**/*.test.{ts,tsx}', '**/__tests__/**/*.{ts,tsx}'],

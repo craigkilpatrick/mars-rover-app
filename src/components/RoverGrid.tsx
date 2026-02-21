@@ -113,21 +113,15 @@ const RoverGrid: React.FC<RoverGridProps> = ({ rovers, obstacles, selectedRoverI
 
   return (
     <Box
+      data-testid="rover-grid"
       sx={{
-        display: 'inline-block',
-        m: 2,
-        p: 2,
+        width: CANVAS_SIZE,
+        height: CANVAS_SIZE,
+        position: 'relative',
         border: '1px solid #ccc',
-        borderRadius: 1,
-        bgcolor: '#f8f8f8',
       }}
     >
-      <canvas
-        ref={canvasRef}
-        width={CANVAS_SIZE}
-        height={CANVAS_SIZE}
-        style={{ display: 'block' }}
-      />
+      <canvas ref={canvasRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
     </Box>
   )
 }

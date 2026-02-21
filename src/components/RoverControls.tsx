@@ -25,7 +25,7 @@ const RoverControls: React.FC<RoverControlsProps> = ({ rover, onSendCommands }) 
   }
 
   return (
-    <Box sx={{ m: 2 }}>
+    <Box data-testid="rover-controls" sx={{ m: 2 }}>
       <Paper sx={{ p: 2, mb: 2 }}>
         <form onSubmit={handleSubmit}>
           <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
@@ -46,10 +46,17 @@ const RoverControls: React.FC<RoverControlsProps> = ({ rover, onSendCommands }) 
         <Typography variant="subtitle2" color="text.secondary" gutterBottom>
           Selected Rover:
         </Typography>
-        <Typography>
-          Position: ({rover.x}, {rover.y})
+        <Typography data-testid="rover-position">
+          Position: ({rover.x}, {rover.y}) {rover.direction}
         </Typography>
-        <Typography>Direction: {rover.direction}</Typography>
+        <Button
+          data-testid="move-forward"
+          variant="contained"
+          onClick={() => onSendCommands(['f'])}
+          sx={{ mt: 1 }}
+        >
+          Forward
+        </Button>
       </Paper>
     </Box>
   )

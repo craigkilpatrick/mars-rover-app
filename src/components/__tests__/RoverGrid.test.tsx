@@ -40,7 +40,6 @@ describe('RoverGrid', () => {
     expect(canvas).toBeInTheDocument()
     expect(canvas).toHaveAttribute('width', '500')
     expect(canvas).toHaveAttribute('height', '500')
-    expect(canvas).toHaveStyle({ display: 'block' })
   })
 
   it('should render with proper container styling', () => {
@@ -50,7 +49,6 @@ describe('RoverGrid', () => {
     const gridContainer = container.firstChild as HTMLElement
 
     expect(gridContainer).toHaveStyle({
-      backgroundColor: '#f8f8f8',
       border: '1px solid #ccc',
     })
   })
