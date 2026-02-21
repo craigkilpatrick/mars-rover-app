@@ -1,4 +1,6 @@
+import { Badge } from '@/components/ui/badge'
 import { Rover } from '../types/rover'
+import RoverCard from './RoverCard'
 
 interface RoverListProps {
   rovers: Rover[]
@@ -16,28 +18,45 @@ const RoverList: React.FC<RoverListProps> = ({
   onDeleteRover,
 }) => {
   return (
-    <div>
-      <h2>Mars Rovers</h2>
-      <ul>
-        {rovers.map(rover => (
-          <li key={rover.id}>
-            <button
-              onClick={() => onSelectRover(rover.id)}
-              data-testid={`rover-item-${rover.id}`}
-              data-selected={rover.id === selectedRoverId ? 'true' : 'false'}
-            >
-              Rover {rover.id} ({rover.x}, {rover.y}) {rover.direction}
-            </button>
-          </li>
-        ))}
-      </ul>
-      <button onClick={onAddRover}>Add New Rover</button>
-      <button
-        data-testid="delete-rover"
-        onClick={() => selectedRoverId && onDeleteRover(selectedRoverId)}
-        disabled={!selectedRoverId}
+    <div className="flex flex-col h-full p-3 gap-2">
+      {/* Panel header */}
+      <div
+        className="flex items-center gap-2 px-1 pb-1 border-b"
+        style={{ borderColor: 'rgba(255,255,255,0.08)' }}
       >
-        Delete
+        <span className="font-mono text-xs tracking-widest uppercase" style={{ color: '#64748b' }}>
+          FLEET
+        </span>
+        <Badge
+          variant="outline"
+          className="font-mono text-xs px-1.5 py-0 h-4"
+          style={{ color: '#64748b', borderColor: 'rgba(255,255,255,0.15)' }}
+        >
+          {rovers.length}
+        </Badge>
+      </div>
+
+      {/* Rover cards */}
+      <div className="flex-1 overflow-y-auto flex flex-col gap-1">
+        {rovers.map(rover => (
+          <RoverCard
+            key={rover.id}
+            rover={rover}
+            isSelected={rover.id === selectedRoverId}
+            onSelect={onSelectRover}
+            onDelete={onDeleteRover}
+          />
+        ))}
+      </div>
+
+      {/* Add rover footer */}
+      <button
+        data-testid="add-rover"
+        onClick={onAddRover}
+        className="w-full text-xs py-1.5 px-3 rounded border font-mono hover:bg-white/[0.05] transition-colors"
+        style={{ color: '#64748b', borderColor: 'rgba(255,255,255,0.08)' }}
+      >
+        + Add Rover
       </button>
     </div>
   )

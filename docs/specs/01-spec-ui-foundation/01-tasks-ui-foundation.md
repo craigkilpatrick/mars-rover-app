@@ -261,7 +261,7 @@ border-l border-white/[0.08] backdrop-blur-md bg-surface/80" />` — empty for n
 
 ---
 
-### [ ] 3.0 Build the Rover Fleet left panel with compact rover cards
+### [x] 3.0 Build the Rover Fleet left panel with compact rover cards
 
 #### 3.0 Proof Artifact(s)
 
@@ -275,11 +275,11 @@ border-l border-white/[0.08] backdrop-blur-md bg-surface/80" />` — empty for n
 
 #### 3.0 Tasks
 
-- [ ] 3.1 Install shadcn/ui Card, Badge, and Separator components:
+- [x] 3.1 Install shadcn/ui Card, Badge, and Separator components:
       `npx shadcn@latest add card badge separator`
       Verify the generated files appear in `src/components/ui/`.
 
-- [ ] 3.2 Create `src/components/RoverCard.tsx`:
+- [x] 3.2 Create `src/components/RoverCard.tsx`:
 
   - Props: `rover: Rover`, `isSelected: boolean`,
     `onSelect: (id: number) => void`, `onDelete: (id: number) => void`
@@ -295,7 +295,7 @@ border-l border-white/[0.08] backdrop-blur-md bg-surface/80" />` — empty for n
     `<button onClick={e => { e.stopPropagation(); onDelete(rover.id) }}
 aria-label="delete rover" data-testid="delete-rover">✕</button>`
 
-- [ ] 3.3 Rewrite `src/components/RoverList.tsx` using the new `RoverCard` component:
+- [x] 3.3 Rewrite `src/components/RoverList.tsx` using the new `RoverCard` component:
 
   - Remove all HTML stub code from Task 1.0
   - Outer panel: `<div className="flex flex-col h-full p-3 gap-2">`
@@ -308,7 +308,7 @@ uppercase`) + shadcn/ui `<Badge>` showing `{rovers.length}` with muted styling
   - Preserve props interface: `rovers`, `selectedRoverId`, `onSelectRover`, `onAddRover`,
     `onDeleteRover`
 
-- [ ] 3.4 Rewrite `src/components/__tests__/RoverList.test.tsx` — final test suite:
+- [x] 3.4 Rewrite `src/components/__tests__/RoverList.test.tsx` — final test suite:
 
   - Remove `ThemeProvider` and transitional HTML stubs from Tasks 1.0–1.13
   - Test 1: renders a card for each rover with correct ID, coordinates, and direction
@@ -319,13 +319,13 @@ uppercase`) + shadcn/ui `<Badge>` showing `{rovers.length}` with muted styling
   - Test 6: fleet header badge shows the correct rover count
   - Test 7: renders without error when `rovers` array is empty
 
-- [ ] 3.5 Wire the left HUD panel slot in `src/App.tsx`:
+- [x] 3.5 Wire the left HUD panel slot in `src/App.tsx`:
 
   - Replace the empty left `<div>` placeholder from Task 2.6 with `<RoverList>`,
     passing `rovers`, `selectedRoverId`, `onSelectRover={setSelectedRoverId}`,
     `onAddRover={handleAddRover}`, `onDeleteRover={handleDeleteRover}`
 
-- [ ] 3.6 Run `make type-check && make lint && make test:run`. Fix any errors before
+- [x] 3.6 Run `make type-check && make lint && make test:run`. Fix any errors before
       proceeding to Task 4.0.
 
 ---

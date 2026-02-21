@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor, act, within } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import App from './App'
 import { getRovers, createRover, deleteRover, sendCommands } from './services/roverApi'
 import { Direction, Rover } from './types/rover'
@@ -24,7 +24,7 @@ describe('App', () => {
   it('should load and display rovers on mount', async () => {
     render(<App />)
 
-    // Initially should show loading state
+    // Initially shows loading state
     expect(screen.getByTestId('loading')).toBeInTheDocument()
 
     // Wait for rovers to load
@@ -32,93 +32,82 @@ describe('App', () => {
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    // Wait for list items to be available
+    // Rover cards are rendered
     await waitFor(() => {
-      const listItems = screen.getAllByRole('listitem')
-      expect(listItems.length).toBe(2)
-      expect(listItems[0].textContent).toContain('Rover 1')
-      expect(listItems[1].textContent).toContain('Rover 2')
+      expect(screen.getByTestId('rover-card-1')).toBeInTheDocument()
+      expect(screen.getByTestId('rover-card-2')).toBeInTheDocument()
+      expect(screen.getByText('ROV-01')).toBeInTheDocument()
+      expect(screen.getByText('ROV-02')).toBeInTheDocument()
     })
   })
 
   it('should handle rover selection', async () => {
     render(<App />)
 
-    // Wait for rovers to load
     await waitFor(() => {
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    // Wait for list items to be available
-    let listItems: HTMLElement[] = []
     await waitFor(() => {
-      listItems = screen.getAllByRole('listitem')
-      expect(listItems.length).toBeGreaterThan(0)
+      expect(screen.getByTestId('rover-card-1')).toBeInTheDocument()
     })
 
-    // Find the button inside the first list item and click it
-    const firstRoverButton = within(listItems[0]).getByRole('button')
-    fireEvent.click(firstRoverButton)
+    // Click the select button inside rover card 1
+    const card1 = screen.getByTestId('rover-card-1')
+    const selectBtn = card1.querySelector('button')!
+    fireEvent.click(selectBtn)
 
-    // Verify selection is reflected via data-selected attribute
-    expect(firstRoverButton).toHaveAttribute('data-selected', 'true')
-
-    // Wait for the command input to be available after rover selection
-    let commandInput: HTMLElement | null = null
+    // Card 1 should now have cyan selection style
     await waitFor(() => {
-      commandInput = screen.queryByRole('textbox')
-      expect(commandInput).not.toBeNull()
-      expect(commandInput).not.toBeDisabled()
+      expect(card1).toHaveClass('border-cyan-400')
+    })
+
+    // Command input should appear
+    await waitFor(() => {
+      expect(screen.queryByRole('textbox')).not.toBeNull()
     })
   })
 
   it('should handle rover deletion', async () => {
     render(<App />)
 
-    // Wait for rovers to load
     await waitFor(() => {
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    // Wait for list items to be available
-    let listItems: HTMLElement[] = []
     await waitFor(() => {
-      listItems = screen.getAllByRole('listitem')
-      expect(listItems.length).toBeGreaterThan(0)
+      expect(screen.getByTestId('rover-card-1')).toBeInTheDocument()
     })
 
-    // Select the first rover
-    const firstRoverButton = within(listItems[0]).getByRole('button')
-    fireEvent.click(firstRoverButton)
+    // Select rover 1
+    const selectBtn = screen.getByTestId('rover-card-1').querySelector('button')!
+    fireEvent.click(selectBtn)
 
-    // Find and click the delete button
-    const deleteButton = screen.getByTestId('delete-rover')
-    fireEvent.click(deleteButton)
+    // Click the delete button that appears on the selected card
+    await waitFor(() => {
+      expect(screen.getByTestId('delete-rover')).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByTestId('delete-rover'))
 
     // Verify delete API was called
     expect(vi.mocked(deleteRover)).toHaveBeenCalledWith(1)
 
-    // Verify UI updates after deletion
+    // Rover 1 card should be gone
     await waitFor(() => {
-      const updatedListItems = screen.getAllByRole('listitem')
-      expect(updatedListItems.length).toBe(1)
-      expect(updatedListItems[0].textContent).toContain('Rover 2')
+      expect(screen.queryByTestId('rover-card-1')).not.toBeInTheDocument()
+      expect(screen.getByTestId('rover-card-2')).toBeInTheDocument()
     })
   })
 
   it('should create new rovers', async () => {
     render(<App />)
 
-    // Wait for rovers to load
     await waitFor(() => {
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    // Click the add rover button
-    const addButton = screen.getByRole('button', { name: /add new rover/i })
-    fireEvent.click(addButton)
+    fireEvent.click(screen.getByTestId('add-rover'))
 
-    // Verify a new rover was created
     await waitFor(() => {
       expect(vi.mocked(createRover)).toHaveBeenCalled()
     })
@@ -127,37 +116,29 @@ describe('App', () => {
   it('should send commands to selected rover', async () => {
     render(<App />)
 
-    // Wait for rovers to load
     await waitFor(() => {
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    // Wait for list items to be available
-    let listItems: HTMLElement[] = []
     await waitFor(() => {
-      listItems = screen.getAllByRole('listitem')
-      expect(listItems.length).toBeGreaterThan(0)
+      expect(screen.getByTestId('rover-card-1')).toBeInTheDocument()
     })
 
-    // Select a rover
-    const firstRoverButton = within(listItems[0]).getByRole('button')
-    fireEvent.click(firstRoverButton)
+    // Select rover 1
+    const selectBtn = screen.getByTestId('rover-card-1').querySelector('button')!
+    fireEvent.click(selectBtn)
 
-    // Wait for the command input
     let commandInput: HTMLElement | null = null
     await waitFor(() => {
       commandInput = screen.queryByRole('textbox')
       expect(commandInput).not.toBeNull()
     })
 
-    // Fill the command input
     fireEvent.change(commandInput!, { target: { value: 'f' } })
 
-    // Send the command
     const executeButton = screen.getByRole('button', { name: /execute/i })
     fireEvent.click(executeButton)
 
-    // Verify the command was sent
     await waitFor(() => {
       expect(vi.mocked(sendCommands)).toHaveBeenCalledWith(1, ['f'])
     })
@@ -177,8 +158,7 @@ describe('App', () => {
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    const addButton = screen.getByRole('button', { name: /add new rover/i })
-    fireEvent.click(addButton)
+    fireEvent.click(screen.getByTestId('add-rover'))
 
     await waitFor(() => {
       const call = vi.mocked(createRover).mock.calls[0]
@@ -208,8 +188,7 @@ describe('App', () => {
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    const addButton = screen.getByRole('button', { name: /add new rover/i })
-    fireEvent.click(addButton)
+    fireEvent.click(screen.getByTestId('add-rover'))
 
     await waitFor(() => {
       expect(screen.getByText(/failed to create rover/i)).toBeInTheDocument()
@@ -225,17 +204,18 @@ describe('App', () => {
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    let listItems: HTMLElement[] = []
     await waitFor(() => {
-      listItems = screen.getAllByRole('listitem')
-      expect(listItems.length).toBeGreaterThan(0)
+      expect(screen.getByTestId('rover-card-1')).toBeInTheDocument()
     })
 
-    const firstRoverButton = within(listItems[0]).getByRole('button')
-    fireEvent.click(firstRoverButton)
+    // Select and try to delete rover 1
+    const selectBtn = screen.getByTestId('rover-card-1').querySelector('button')!
+    fireEvent.click(selectBtn)
 
-    const deleteButton = screen.getByTestId('delete-rover')
-    fireEvent.click(deleteButton)
+    await waitFor(() => {
+      expect(screen.getByTestId('delete-rover')).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByTestId('delete-rover'))
 
     await waitFor(() => {
       expect(screen.getByText(/failed to delete rover/i)).toBeInTheDocument()
@@ -251,14 +231,12 @@ describe('App', () => {
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    let listItems: HTMLElement[] = []
     await waitFor(() => {
-      listItems = screen.getAllByRole('listitem')
-      expect(listItems.length).toBeGreaterThan(0)
+      expect(screen.getByTestId('rover-card-1')).toBeInTheDocument()
     })
 
-    const firstRoverButton = within(listItems[0]).getByRole('button')
-    fireEvent.click(firstRoverButton)
+    const selectBtn = screen.getByTestId('rover-card-1').querySelector('button')!
+    fireEvent.click(selectBtn)
 
     let commandInput: HTMLElement | null = null
     await waitFor(() => {
@@ -291,15 +269,12 @@ describe('App', () => {
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     })
 
-    let listItems: HTMLElement[] = []
     await waitFor(() => {
-      listItems = screen.getAllByRole('listitem')
-      expect(listItems.length).toBeGreaterThan(0)
-      expect(listItems[0].textContent).toContain('Rover 1')
+      expect(screen.getByTestId('rover-card-1')).toBeInTheDocument()
     })
 
-    const firstRoverButton = within(listItems[0]).getByRole('button')
-    fireEvent.click(firstRoverButton)
+    const selectBtn = screen.getByTestId('rover-card-1').querySelector('button')!
+    fireEvent.click(selectBtn)
 
     let commandInput: HTMLElement | null = null
     await waitFor(() => {
