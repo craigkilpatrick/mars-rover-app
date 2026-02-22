@@ -181,7 +181,7 @@ Add spring press feedback to the Execute button and all four directional pad but
 
 ---
 
-### [ ] 3.0 Fleet List AnimatePresence and Full Test Coverage
+### [x] 3.0 Fleet List AnimatePresence and Full Test Coverage
 
 Wrap the rover card list in `AnimatePresence` so cards animate in with a fade+height expand and animate out with a fade+height collapse, with `layout` prop for smooth reflow. Add a global `framer-motion` mock to `src/test/setup.ts` so all `motion.*` elements render as plain HTML and `AnimatePresence` passes children through — keeping the full test suite fast and predictable. Verify all unit tests and the Playwright e2e suite pass, and confirm a clean production build.
 
@@ -193,7 +193,7 @@ Wrap the rover card list in `AnimatePresence` so cards animate in with a fade+he
 
 #### 3.0 Tasks
 
-- [ ] 3.1 Add the global `framer-motion` mock to `src/test/setup.ts`. Add the following at the bottom of the file. The mock factory uses `async` to import React so it can create forwarded-ref components. It strips all framer-motion-specific props before passing remaining props to the plain HTML element:
+- [x] 3.1 Add the global `framer-motion` mock to `src/test/setup.ts`. Add the following at the bottom of the file. The mock factory uses `async` to import React so it can create forwarded-ref components. It strips all framer-motion-specific props before passing remaining props to the plain HTML element:
 
   ```ts
   vi.mock('framer-motion', async () => {
@@ -236,9 +236,9 @@ Wrap the rover card list in `AnimatePresence` so cards animate in with a fade+he
   })
   ```
 
-- [ ] 3.2 Run `npm run test:run` immediately after adding the mock to confirm all existing 64 tests still pass. Fix any issues before continuing.
+- [x] 3.2 Run `npm run test:run` immediately after adding the mock to confirm all existing 64 tests still pass. Fix any issues before continuing.
 
-- [ ] 3.3 In `RoverList.tsx`, add the `AnimatePresence` fleet list animation. Import `AnimatePresence` and `motion` from `framer-motion`. Wrap the existing rover cards list (inside `<div className="flex-1 overflow-y-auto flex flex-col gap-1">`) with `<AnimatePresence>`. Replace each `<RoverCard key={rover.id} .../>` with a `motion.div` wrapper:
+- [x] 3.3 In `RoverList.tsx`, add the `AnimatePresence` fleet list animation. Import `AnimatePresence` and `motion` from `framer-motion`. Wrap the existing rover cards list (inside `<div className="flex-1 overflow-y-auto flex flex-col gap-1">`) with `<AnimatePresence>`. Replace each `<RoverCard key={rover.id} .../>` with a `motion.div` wrapper:
 
   ```tsx
   <AnimatePresence>
@@ -265,6 +265,6 @@ Wrap the rover card list in `AnimatePresence` so cards animate in with a fade+he
 
   The `key` moves from `RoverCard` to the `motion.div` wrapper so `AnimatePresence` can track enter/exit.
 
-- [ ] 3.4 Run `npm run test:run` and confirm all tests pass. The existing `RoverList.test.tsx` tests (`rover-card-1`, `rover-card-2`, selection style, etc.) should still pass because the global mock renders `motion.div` as a plain `div` and `AnimatePresence` passes children through.
+- [x] 3.4 Run `npm run test:run` and confirm all tests pass. The existing `RoverList.test.tsx` tests (`rover-card-1`, `rover-card-2`, selection style, etc.) should still pass because the global mock renders `motion.div` as a plain `div` and `AnimatePresence` passes children through.
 
-- [ ] 3.5 Run `npm run lint && npm run format && npm run build`. Confirm clean lint (no errors or warnings), clean TypeScript compile, and `vendor-framer` chunk present in `dist/assets/`.
+- [x] 3.5 Run `npm run lint && npm run format && npm run build`. Confirm clean lint (no errors or warnings), clean TypeScript compile, and `vendor-framer` chunk present in `dist/assets/`.

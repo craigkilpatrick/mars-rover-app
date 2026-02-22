@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
 import { Rover } from '../types/rover'
 import RoverCard from './RoverCard'
@@ -38,15 +39,26 @@ const RoverList: React.FC<RoverListProps> = ({
 
       {/* Rover cards */}
       <div className="flex-1 overflow-y-auto flex flex-col gap-1">
-        {rovers.map(rover => (
-          <RoverCard
-            key={rover.id}
-            rover={rover}
-            isSelected={rover.id === selectedRoverId}
-            onSelect={onSelectRover}
-            onDelete={onDeleteRover}
-          />
-        ))}
+        <AnimatePresence>
+          {rovers.map(rover => (
+            <motion.div
+              key={rover.id}
+              layout
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ overflow: 'hidden' }}
+            >
+              <RoverCard
+                rover={rover}
+                isSelected={rover.id === selectedRoverId}
+                onSelect={onSelectRover}
+                onDelete={onDeleteRover}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {/* Add rover footer */}
