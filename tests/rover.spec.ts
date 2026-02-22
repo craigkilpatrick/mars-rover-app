@@ -75,11 +75,8 @@ test.describe('Mars Rover App', () => {
   })
 
   test('should display grid', async ({ page }) => {
-    // The grid should be visible
-    await expect(page.locator('[data-testid="rover-grid"]')).toBeVisible()
-
-    // Verify the canvas element exists within the grid
-    await expect(page.locator('[data-testid="rover-grid"] canvas')).toBeVisible()
+    // The 3D Mars scene should be visible
+    await expect(page.locator('[data-testid="mars-scene"]')).toBeVisible()
   })
 
   test('should handle errors gracefully', async ({ page }) => {

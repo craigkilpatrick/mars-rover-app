@@ -71,7 +71,7 @@ Add `RoverMesh` and `ObstacleMesh` sub-components to the scene. Each rover rende
 
 ---
 
-### [ ] 3.0 Smooth Movement Animation and Full Test Coverage
+### [x] 3.0 Smooth Movement Animation and Full Test Coverage
 
 Add lerp/tween animation so rovers smoothly glide to new positions when commands are executed. Write `MarsScene.test.tsx` (mocking R3F at the file level), delete the now-obsolete `RoverGrid.test.tsx`, and update the Playwright e2e test to use the new `data-testid`. All unit tests pass; build is clean.
 
@@ -83,11 +83,11 @@ Add lerp/tween animation so rovers smoothly glide to new positions when commands
 
 #### 3.0 Tasks
 
-- [ ] 3.1 Add lerp animation to `RoverMesh.tsx`: import `useRef` from React and `useFrame` from `@react-three/fiber`; import `* as THREE` from `three`; create `const groupRef = useRef<THREE.Group>(null)` and `const targetPos = useRef(new THREE.Vector3(toWorld(rover.x), 0.2, toWorld(rover.y)))`; add `useEffect(() => { targetPos.current.set(toWorld(rover.x), 0.2, toWorld(rover.y)) }, [rover.x, rover.y])`; add `useFrame((_, delta) => { if (groupRef.current) groupRef.current.position.lerp(targetPos.current, delta * 5) })`; attach `ref={groupRef}` to the outer `<group>` and remove the static `position` prop from it (position is now managed by `useFrame`)
-- [ ] 3.2 Create `src/components/__tests__/MarsScene.test.tsx`: at the top, add `vi.mock('@react-three/fiber', ...)` mapping `Canvas` to `({ children }) => <div data-testid="r3f-canvas">{children}</div>`, and mocking `useFrame` and `useThree` as `vi.fn()`; add `vi.mock('@react-three/drei', ...)` mapping `OrbitControls`, `Stars`, and `Grid` to `() => null`; also mock `../RoverMesh` and `../ObstacleMesh` as simple `<div data-testid>` stubs so tests focus on `MarsScene` structure
-- [ ] 3.3 Write unit tests in `MarsScene.test.tsx` covering: (a) renders wrapper div with `data-testid="mars-scene"` without crashing; (b) renders one `RoverMesh` stub per rover in the `rovers` prop; (c) renders one `ObstacleMesh` stub per obstacle in the `obstacles` prop; (d) renders nothing when `rovers` and `obstacles` are empty arrays; (e) accepts `selectedRoverId` prop without error
-- [ ] 3.4 Delete `src/components/__tests__/RoverGrid.test.tsx` (replaced by `MarsScene.test.tsx`)
-- [ ] 3.5 Delete `src/components/RoverGrid.tsx` (fully replaced by `MarsScene.tsx`)
-- [ ] 3.6 Update `tests/rover.spec.ts`: in the "should display grid" test, change `page.locator('[data-testid="rover-grid"]')` to `page.locator('[data-testid="mars-scene"]')` and remove the inner canvas assertion (`[data-testid="rover-grid"] canvas`); replace it with `await expect(page.locator('[data-testid="mars-scene"]')).toBeVisible()`
-- [ ] 3.7 Run `npm run test:run` and confirm all tests pass with no failures
-- [ ] 3.8 Run `npm run lint && npm run format && npm run build` and confirm a clean build with no TypeScript errors; verify `vendor-three` chunk is present in `dist/assets/`
+- [x] 3.1 Add lerp animation to `RoverMesh.tsx`: import `useRef` from React and `useFrame` from `@react-three/fiber`; import `* as THREE` from `three`; create `const groupRef = useRef<THREE.Group>(null)` and `const targetPos = useRef(new THREE.Vector3(toWorld(rover.x), 0.2, toWorld(rover.y)))`; add `useEffect(() => { targetPos.current.set(toWorld(rover.x), 0.2, toWorld(rover.y)) }, [rover.x, rover.y])`; add `useFrame((_, delta) => { if (groupRef.current) groupRef.current.position.lerp(targetPos.current, delta * 5) })`; attach `ref={groupRef}` to the outer `<group>` and remove the static `position` prop from it (position is now managed by `useFrame`)
+- [x] 3.2 Create `src/components/__tests__/MarsScene.test.tsx`: at the top, add `vi.mock('@react-three/fiber', ...)` mapping `Canvas` to `({ children }) => <div data-testid="r3f-canvas">{children}</div>`, and mocking `useFrame` and `useThree` as `vi.fn()`; add `vi.mock('@react-three/drei', ...)` mapping `OrbitControls`, `Stars`, and `Grid` to `() => null`; also mock `../RoverMesh` and `../ObstacleMesh` as simple `<div data-testid>` stubs so tests focus on `MarsScene` structure
+- [x] 3.3 Write unit tests in `MarsScene.test.tsx` covering: (a) renders wrapper div with `data-testid="mars-scene"` without crashing; (b) renders one `RoverMesh` stub per rover in the `rovers` prop; (c) renders one `ObstacleMesh` stub per obstacle in the `obstacles` prop; (d) renders nothing when `rovers` and `obstacles` are empty arrays; (e) accepts `selectedRoverId` prop without error
+- [x] 3.4 Delete `src/components/__tests__/RoverGrid.test.tsx` (replaced by `MarsScene.test.tsx`)
+- [x] 3.5 Delete `src/components/RoverGrid.tsx` (fully replaced by `MarsScene.tsx`)
+- [x] 3.6 Update `tests/rover.spec.ts`: in the "should display grid" test, change `page.locator('[data-testid="rover-grid"]')` to `page.locator('[data-testid="mars-scene"]')` and remove the inner canvas assertion (`[data-testid="rover-grid"] canvas`); replace it with `await expect(page.locator('[data-testid="mars-scene"]')).toBeVisible()`
+- [x] 3.7 Run `npm run test:run` and confirm all tests pass with no failures
+- [x] 3.8 Run `npm run lint && npm run format && npm run build` and confirm a clean build with no TypeScript errors; verify `vendor-three` chunk is present in `dist/assets/`

@@ -1,3 +1,6 @@
+import { useRef, useEffect } from 'react'
+import { useFrame } from '@react-three/fiber'
+import * as THREE from 'three'
 import { Rover } from '../types/rover'
 
 interface RoverMeshProps {
@@ -16,9 +19,21 @@ const directionRotation: Record<string, number> = {
 
 function RoverMesh({ rover, isSelected }: RoverMeshProps) {
   const rotation = directionRotation[rover.direction] ?? 0
+  const groupRef = useRef<THREE.Group>(null)
+  const targetPos = useRef(new THREE.Vector3(toWorld(rover.x), 0.2, toWorld(rover.y)))
+
+  useEffect(() => {
+    targetPos.current.set(toWorld(rover.x), 0.2, toWorld(rover.y))
+  }, [rover.x, rover.y])
+
+  useFrame((_, delta) => {
+    if (groupRef.current) {
+      groupRef.current.position.lerp(targetPos.current, delta * 5)
+    }
+  })
 
   return (
-    <group position={[toWorld(rover.x), 0.2, toWorld(rover.y)]} rotation={[0, rotation, 0]}>
+    <group ref={groupRef} rotation={[0, rotation, 0]}>
       {/* Body */}
       <mesh castShadow>
         <boxGeometry args={[0.8, 0.4, 0.8]} />
