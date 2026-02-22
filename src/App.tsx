@@ -128,73 +128,72 @@ function App() {
     }
   }, [])
 
-  if (loading) {
-    return (
-      <div
-        data-testid="loading"
-        className="flex h-screen w-screen items-center justify-center bg-background"
-      >
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center gap-3"
+  return (
+    <>
+      <Toaster position="bottom-center" theme="dark" />
+      {loading ? (
+        <div
+          data-testid="loading"
+          className="flex h-screen w-screen items-center justify-center bg-background"
         >
           <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className="h-8 w-8 rounded-full border-2 border-transparent border-t-cyan-400"
-          />
-          <span className="font-mono text-xs" style={{ color: '#64748b' }}>
-            Initializing...
-          </span>
-        </motion.div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="relative h-screen w-screen overflow-hidden bg-background">
-      {/* Full-viewport canvas as backdrop */}
-      <MarsScene rovers={rovers} obstacles={obstacles} selectedRoverId={selectedRoverId} />
-
-      {/* Fixed top bar overlay */}
-      <TopBar isConnected={isConnected} />
-
-      {/* Left HUD panel — Rover Fleet */}
-      <div
-        className="fixed left-0 top-12 w-60 h-[calc(100vh-3rem)] border-r backdrop-blur-md overflow-y-auto"
-        style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(15,17,23,0.8)' }}
-      >
-        <RoverList
-          rovers={rovers}
-          selectedRoverId={selectedRoverId}
-          onSelectRover={setSelectedRoverId}
-          onAddRover={handleAddRover}
-          onDeleteRover={handleDeleteRover}
-        />
-      </div>
-
-      {/* Right HUD panel — Mission HQ */}
-      <div
-        className="fixed right-0 top-12 w-72 h-[calc(100vh-3rem)] border-l backdrop-blur-md overflow-y-auto flex flex-col"
-        style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(15,17,23,0.8)' }}
-      >
-        <div className="flex-1">
-          <RoverControls rover={selectedRover} onSendCommands={handleSendCommands} />
-        </div>
-        <div className="p-3 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-          <button
-            onClick={addRandomObstacle}
-            className="w-full text-xs py-1.5 px-3 rounded border font-mono hover:bg-white/[0.05] transition-colors"
-            style={{ color: '#64748b', borderColor: 'rgba(255,255,255,0.08)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col items-center gap-3"
           >
-            + Add Obstacle
-          </button>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              className="h-8 w-8 rounded-full border-2 border-transparent border-t-cyan-400"
+            />
+            <span className="font-mono text-xs" style={{ color: '#64748b' }}>
+              Initializing...
+            </span>
+          </motion.div>
         </div>
-      </div>
+      ) : (
+        <div className="relative h-screen w-screen overflow-hidden bg-background">
+          {/* Full-viewport canvas as backdrop */}
+          <MarsScene rovers={rovers} obstacles={obstacles} selectedRoverId={selectedRoverId} />
 
-      <Toaster position="bottom-center" theme="dark" />
-    </div>
+          {/* Fixed top bar overlay */}
+          <TopBar isConnected={isConnected} />
+
+          {/* Left HUD panel — Rover Fleet */}
+          <div
+            className="fixed left-0 top-12 w-60 h-[calc(100vh-3rem)] border-r backdrop-blur-md overflow-y-auto"
+            style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(15,17,23,0.8)' }}
+          >
+            <RoverList
+              rovers={rovers}
+              selectedRoverId={selectedRoverId}
+              onSelectRover={setSelectedRoverId}
+              onAddRover={handleAddRover}
+              onDeleteRover={handleDeleteRover}
+            />
+          </div>
+
+          {/* Right HUD panel — Mission HQ */}
+          <div
+            className="fixed right-0 top-12 w-72 h-[calc(100vh-3rem)] border-l backdrop-blur-md overflow-y-auto flex flex-col"
+            style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(15,17,23,0.8)' }}
+          >
+            <div className="flex-1">
+              <RoverControls rover={selectedRover} onSendCommands={handleSendCommands} />
+            </div>
+            <div className="p-3 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+              <button
+                onClick={addRandomObstacle}
+                className="w-full text-xs py-1.5 px-3 rounded border font-mono hover:bg-white/[0.05] transition-colors"
+                style={{ color: '#64748b', borderColor: 'rgba(255,255,255,0.08)' }}
+              >
+                + Add Obstacle
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 

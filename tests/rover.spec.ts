@@ -58,9 +58,7 @@ test.describe('Mars Rover App', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({
-          rover: { id: 1, x: 0, y: 1, direction: 'N', color: '#06b6d4' },
-        }),
+        body: JSON.stringify({ id: 1, x: 0, y: 1, direction: 'N', color: '#06b6d4' }),
       })
     })
 
@@ -95,6 +93,6 @@ test.describe('Mars Rover App', () => {
     await page.reload()
 
     // Verify error toast is displayed with error message
-    await expect(page.getByText(/failed to load rovers/i)).toBeVisible()
+    await expect(page.getByText(/failed to load rovers/i).first()).toBeVisible()
   })
 })
