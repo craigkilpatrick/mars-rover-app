@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { motion } from 'framer-motion'
 import { Toaster, toast } from 'sonner'
 import MarsScene from './components/MarsScene'
 import RoverList from './components/RoverList'
@@ -125,7 +126,27 @@ function App() {
   }, [])
 
   if (loading) {
-    return <div data-testid="loading">Loading...</div>
+    return (
+      <div
+        data-testid="loading"
+        className="flex h-screen w-screen items-center justify-center bg-background"
+      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex flex-col items-center gap-3"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            className="h-8 w-8 rounded-full border-2 border-transparent border-t-cyan-400"
+          />
+          <span className="font-mono text-xs" style={{ color: '#64748b' }}>
+            Initializing...
+          </span>
+        </motion.div>
+      </div>
+    )
   }
 
   return (
