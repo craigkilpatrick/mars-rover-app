@@ -49,7 +49,7 @@ Install `framer-motion` as a dependency, wire it into the Vite chunk config, and
 
 ---
 
-### [ ] 2.0 Command Feedback Animations
+### [x] 2.0 Command Feedback Animations
 
 Add spring press feedback to the Execute button and all four directional pad buttons. Track command result state (`idle | success | obstacle`) in `RoverControls` and animate the Execute button border with a cyan glow on success and a red glow on obstacle, returning to default after 800 ms. Trigger a horizontal shake on the command input area when an obstacle is detected. Animate the X, Y, and DIR position values with an odometer slide effect whenever rover coordinates change.
 
@@ -62,7 +62,7 @@ Add spring press feedback to the Execute button and all four directional pad but
 
 #### 2.0 Tasks
 
-- [ ] 2.1 Update the `onSendCommands` prop type in `RoverControls.tsx`. Change `RoverControlsProps`:
+- [x] 2.1 Update the `onSendCommands` prop type in `RoverControls.tsx`. Change `RoverControlsProps`:
 
   ```ts
   // Before
@@ -73,7 +73,7 @@ Add spring press feedback to the Execute button and all four directional pad but
 
   In `App.tsx`, update `handleSendCommands` to return the result. In the `try` block, return `{ obstacleDetected: result.obstacleDetected }` after handling the toasts. In the `catch` block, return `undefined` (or nothing). This allows `RoverControls` to read the outcome without knowing about toasts.
 
-- [ ] 2.2 Update `RoverControls.test.tsx` to match the new async signature. Change:
+- [x] 2.2 Update `RoverControls.test.tsx` to match the new async signature. Change:
 
   ```ts
   const mockOnSendCommands = vi.fn()
@@ -87,7 +87,7 @@ Add spring press feedback to the Execute button and all four directional pad but
 
   Run `npm run test:run` and confirm all existing 8 `RoverControls` tests still pass.
 
-- [ ] 2.3 Add `commandResult` state to `RoverControls.tsx`. Import `useState` (already imported). Add:
+- [x] 2.3 Add `commandResult` state to `RoverControls.tsx`. Import `useState` (already imported). Add:
 
   ```ts
   const [commandResult, setCommandResult] = useState<'idle' | 'success' | 'obstacle'>('idle')
@@ -108,14 +108,14 @@ Add spring press feedback to the Execute button and all four directional pad but
   }
   ```
 
-- [ ] 2.4 Convert the Execute button in `RoverControls.tsx` to `motion.button`. Import `motion` from `framer-motion`. Replace `<button data-testid="execute-btn" ...>` with `<motion.button data-testid="execute-btn" ...>`. Add these Framer Motion props:
+- [x] 2.4 Convert the Execute button in `RoverControls.tsx` to `motion.button`. Import `motion` from `framer-motion`. Replace `<button data-testid="execute-btn" ...>` with `<motion.button data-testid="execute-btn" ...>`. Add these Framer Motion props:
 
   - `whileTap={{ scale: 0.93 }}` with `transition={{ type: 'spring', stiffness: 400, damping: 17 }}` for the spring press.
   - `animate={{ borderColor: commandResult === 'success' ? '#06b6d4' : commandResult === 'obstacle' ? '#ef4444' : 'rgba(255,255,255,0.15)' }}` for the glow. Remove the static `borderColor` from the `style` prop since `animate` now drives it.
 
-- [ ] 2.5 Convert all four `<button>` elements in `DirectionalPad.tsx` to `motion.button`. Import `motion` from `framer-motion`. Add `whileTap={{ scale: 0.93 }}` and `transition={{ type: 'spring', stiffness: 400, damping: 17 }}` to all four directional buttons (forward, backward, turn left, turn right). Keep all existing `aria-label`, `disabled`, `onClick`, `className`, and `style` props unchanged.
+- [x] 2.5 Convert all four `<button>` elements in `DirectionalPad.tsx` to `motion.button`. Import `motion` from `framer-motion`. Add `whileTap={{ scale: 0.93 }}` and `transition={{ type: 'spring', stiffness: 400, damping: 17 }}` to all four directional buttons (forward, backward, turn left, turn right). Keep all existing `aria-label`, `disabled`, `onClick`, `className`, and `style` props unchanged.
 
-- [ ] 2.6 Add the shake animation to the command input area in `RoverControls.tsx`. Import `useAnimation` from `framer-motion`. Create `const shakeControls = useAnimation()`. Wrap the `<div className="flex flex-col gap-2 px-1">` that contains the `<input>` and execute button with `<motion.div animate={shakeControls}>`. Add a `useEffect` that triggers the shake when an obstacle is detected:
+- [x] 2.6 Add the shake animation to the command input area in `RoverControls.tsx`. Import `useAnimation` from `framer-motion`. Create `const shakeControls = useAnimation()`. Wrap the `<div className="flex flex-col gap-2 px-1">` that contains the `<input>` and execute button with `<motion.div animate={shakeControls}>`. Add a `useEffect` that triggers the shake when an obstacle is detected:
 
   ```ts
   useEffect(() => {
@@ -125,7 +125,7 @@ Add spring press feedback to the Execute button and all four directional pad but
   }, [commandResult, shakeControls])
   ```
 
-- [ ] 2.7 Add the odometer effect to the position readout in `RoverControls.tsx`. Import `AnimatePresence` from `framer-motion`. Replace the single `<span data-testid="rover-position">X: {rover.x} Y: {rover.y} | DIR: {rover.direction}</span>` with a container that keeps `data-testid="rover-position"` but animates each value individually:
+- [x] 2.7 Add the odometer effect to the position readout in `RoverControls.tsx`. Import `AnimatePresence` from `framer-motion`. Replace the single `<span data-testid="rover-position">X: {rover.x} Y: {rover.y} | DIR: {rover.direction}</span>` with a container that keeps `data-testid="rover-position"` but animates each value individually:
 
   ```tsx
   <div
@@ -177,7 +177,7 @@ Add spring press feedback to the Execute button and all four directional pad but
 
   Note: The existing test checks `toHaveTextContent('X: 5 Y: 10 | DIR: N')` — the text content of the container element still includes all these values, so the test should continue to pass.
 
-- [ ] 2.8 Run `npm run lint && npm run test:run && npm run build`. Confirm all tests pass and the build is clean.
+- [x] 2.8 Run `npm run lint && npm run test:run && npm run build`. Confirm all tests pass and the build is clean.
 
 ---
 

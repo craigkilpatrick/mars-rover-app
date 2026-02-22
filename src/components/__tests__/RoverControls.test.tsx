@@ -5,7 +5,7 @@ import { Rover } from '../../types/rover'
 
 describe('RoverControls', () => {
   const mockRover: Rover = { id: 1, x: 5, y: 10, direction: 'N', color: '#ff0000' }
-  const mockOnSendCommands = vi.fn()
+  const mockOnSendCommands = vi.fn().mockResolvedValue(undefined)
 
   beforeEach(() => {
     vi.clearAllMocks()

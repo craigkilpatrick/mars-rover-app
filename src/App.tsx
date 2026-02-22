@@ -86,7 +86,9 @@ function App() {
     }
   }
 
-  const handleSendCommands = async (commands: Command[]) => {
+  const handleSendCommands = async (
+    commands: Command[]
+  ): Promise<{ obstacleDetected?: boolean } | void> => {
     if (!selectedRoverId) return
 
     try {
@@ -103,6 +105,7 @@ function App() {
       } else {
         toast.success('Commands executed')
       }
+      return { obstacleDetected: result.obstacleDetected }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       toast.error('Failed to send commands: ' + errorMessage)
