@@ -2,10 +2,21 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import App from './App'
 import { getRovers, createRover, deleteRover, sendCommands } from './services/roverApi'
+import { toast } from 'sonner'
 import { Direction, Rover } from './types/rover'
 
 // Mock the API module
 vi.mock('./services/roverApi')
+
+// Mock Sonner so toasts don't render DOM and we can assert on calls
+vi.mock('sonner', () => ({
+  toast: {
+    error: vi.fn(),
+    success: vi.fn(),
+    warning: vi.fn(),
+  },
+  Toaster: () => null,
+}))
 
 describe('App', () => {
   const mockRovers: Rover[] = [
@@ -36,8 +47,9 @@ describe('App', () => {
     await waitFor(() => {
       expect(screen.getByTestId('rover-card-1')).toBeInTheDocument()
       expect(screen.getByTestId('rover-card-2')).toBeInTheDocument()
-      expect(screen.getByText('ROV-01')).toBeInTheDocument()
-      expect(screen.getByText('ROV-02')).toBeInTheDocument()
+      // ROV-01 appears in both fleet card and mission HQ panel (auto-selected)
+      expect(screen.getAllByText('ROV-01')[0]).toBeInTheDocument()
+      expect(screen.getAllByText('ROV-02')[0]).toBeInTheDocument()
     })
   })
 
@@ -176,7 +188,9 @@ describe('App', () => {
     render(<App />)
 
     await waitFor(() => {
-      expect(screen.getByText(/failed to load rovers/i)).toBeInTheDocument()
+      expect(vi.mocked(toast.error)).toHaveBeenCalledWith(
+        expect.stringMatching(/failed to load rovers/i)
+      )
     })
   })
 
@@ -191,7 +205,9 @@ describe('App', () => {
     fireEvent.click(screen.getByTestId('add-rover'))
 
     await waitFor(() => {
-      expect(screen.getByText(/failed to create rover/i)).toBeInTheDocument()
+      expect(vi.mocked(toast.error)).toHaveBeenCalledWith(
+        expect.stringMatching(/failed to create rover/i)
+      )
     })
   })
 
@@ -218,7 +234,9 @@ describe('App', () => {
     fireEvent.click(screen.getByTestId('delete-rover'))
 
     await waitFor(() => {
-      expect(screen.getByText(/failed to delete rover/i)).toBeInTheDocument()
+      expect(vi.mocked(toast.error)).toHaveBeenCalledWith(
+        expect.stringMatching(/failed to delete rover/i)
+      )
     })
   })
 
@@ -250,7 +268,9 @@ describe('App', () => {
     fireEvent.click(executeButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/failed to send commands/i)).toBeInTheDocument()
+      expect(vi.mocked(toast.error)).toHaveBeenCalledWith(
+        expect.stringMatching(/failed to send commands/i)
+      )
     })
   })
 

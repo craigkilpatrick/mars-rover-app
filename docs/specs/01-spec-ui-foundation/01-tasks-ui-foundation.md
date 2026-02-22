@@ -330,7 +330,7 @@ uppercase`) + shadcn/ui `<Badge>` showing `{rovers.length}` with muted styling
 
 ---
 
-### [ ] 4.0 Build the Mission HQ right panel with directional pad and toast notifications
+### [x] 4.0 Build the Mission HQ right panel with directional pad and toast notifications
 
 #### 4.0 Proof Artifact(s)
 
@@ -345,10 +345,10 @@ uppercase`) + shadcn/ui `<Badge>` showing `{rovers.length}` with muted styling
 
 #### 4.0 Tasks
 
-- [ ] 4.1 Install shadcn/ui Button, Input, and Sonner (toast) components:
+- [x] 4.1 Install shadcn/ui Button, Input, and Sonner (toast) components:
       `npx shadcn@latest add button input sonner`
 
-- [ ] 4.2 Create `src/components/DirectionalPad.tsx`:
+- [x] 4.2 Create `src/components/DirectionalPad.tsx`:
 
   - Props: `onCommand: (cmd: Command) => void`, `disabled: boolean`
   - Render a 3-column CSS grid (`grid grid-cols-3 gap-1 w-fit mx-auto`)
@@ -363,7 +363,7 @@ hover:border-accent-cyan hover:text-accent-cyan"`, `disabled={disabled}`,
     and `onClick` calling `onCommand` with `'f'`, `'b'`, `'l'`, or `'r'`
   - Add `aria-label` to each button: `"forward"`, `"backward"`, `"turn left"`, `"turn right"`
 
-- [ ] 4.3 Rewrite `src/components/RoverControls.tsx` using shadcn/ui components:
+- [x] 4.3 Rewrite `src/components/RoverControls.tsx` using shadcn/ui components:
 
   - Remove all HTML stub code from Task 1.0
   - Props interface unchanged: `rover: Rover | undefined`, `onSendCommands: (cmds: Command[]) => void`
@@ -378,7 +378,7 @@ Select a rover to begin</div>` with all controls absent
       `onSendCommands(commandString.split('') as Command[])` then clears the input
   - Add `data-testid="command-input"` to the Input and `data-testid="execute-btn"` to the Button
 
-- [ ] 4.4 Add Sonner `<Toaster>` to `src/App.tsx` and replace the plain `<div>` notification/error
+- [x] 4.4 Add Sonner `<Toaster>` to `src/App.tsx` and replace the plain `<div>` notification/error
       stubs from Task 1.0 with `toast()` calls:
 
   - Import `{ Toaster, toast }` from `sonner`
@@ -392,14 +392,14 @@ Select a rover to begin</div>` with all controls absent
   - Remove the `notification` state variable and `error` state variable; remove all remaining
     `<div data-testid="notification">` and `<div data-testid="error-banner">` stubs
 
-- [ ] 4.5 Wire the right HUD panel slot in `src/App.tsx`:
+- [x] 4.5 Wire the right HUD panel slot in `src/App.tsx`:
 
   - Replace the empty right `<div>` placeholder from Task 2.6 with `<RoverControls>`,
     passing `rover={selectedRover}` and `onSendCommands={handleSendCommands}`
   - Move the "Add Random Obstacle" button inside the RoverControls panel or as a footer
     element of the right HUD panel div
 
-- [ ] 4.6 Create `src/components/__tests__/RoverControls.test.tsx` — new test file:
+- [x] 4.6 Create `src/components/__tests__/RoverControls.test.tsx` — new test file:
 
   - Test 1: renders "Select a rover" placeholder when `rover` prop is `undefined`
   - Test 2: renders rover ID and status string when `rover` is provided
@@ -412,7 +412,7 @@ Select a rover to begin</div>` with all controls absent
   - Test 8: clicking Execute calls `onSendCommands` with the command string split into
     an array, then clears the input
 
-- [ ] 4.7 Update `src/App.test.tsx` — replace remaining stubs with final assertions:
+- [x] 4.7 Update `src/App.test.tsx` — replace remaining stubs with final assertions:
 
   - Replace `getByTestId('loading')` with an appropriate check that matches the final
     loading indicator in App (a spinner, text, or whatever is implemented)
@@ -420,13 +420,13 @@ Select a rover to begin</div>` with all controls absent
     or check that `toast.error` was called (mock Sonner in test setup)
   - Remove the `getByTestId('notification')` reference if present
 
-- [ ] 4.8 Update Playwright e2e tests in `tests/`:
+- [x] 4.8 Update Playwright e2e tests in `tests/`:
 
   - Remove any MUI class selectors (`.MuiListItem-root`, `.MuiAlert-root`, `.Mui-selected`)
   - Replace with `data-testid` selectors (`[data-testid="rover-card-1"]`) or accessible
     role selectors (`getByRole('button', { name: /forward/i })`)
 
-- [ ] 4.9 Run `make test:run && make test:e2e` and fix any remaining failures.
+- [x] 4.9 Run `make test:run && make test:e2e` and fix any remaining failures.
 
-- [ ] 4.10 Run `make build` and note the final bundle size. Verify MUI packages are absent
+- [x] 4.10 Run `make build` and note the final bundle size. Verify MUI packages are absent
       from the build output (`dist/assets/` should contain no chunk named `mui`).

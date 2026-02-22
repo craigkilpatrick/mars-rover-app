@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { Toaster, toast } from 'sonner'
 import RoverGrid from './components/RoverGrid'
 import RoverList from './components/RoverList'
 import RoverControls from './components/RoverControls'
@@ -12,8 +13,6 @@ function App() {
   const [obstacles, setObstacles] = useState<Obstacle[]>([])
   const [selectedRoverId, setSelectedRoverId] = useState<number | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
-  const [notification, setNotification] = useState<string | null>(null)
 
   const { isConnected } = useApiHealth()
   const selectedRover = rovers?.find(rover => rover.id === selectedRoverId) || undefined
@@ -26,7 +25,9 @@ function App() {
         setSelectedRoverId(fetchedRovers[0].id)
       }
     } catch (error) {
-      setError('Failed to load rovers: ' + (error instanceof Error ? error.message : String(error)))
+      toast.error(
+        'Failed to load rovers: ' + (error instanceof Error ? error.message : String(error))
+      )
       setRovers([])
     }
   }, [selectedRoverId])
@@ -63,7 +64,7 @@ function App() {
         setSelectedRoverId(newRover.id)
       }
     } catch (error) {
-      setError(
+      toast.error(
         'Failed to create rover: ' + (error instanceof Error ? error.message : String(error))
       )
     }
@@ -78,7 +79,7 @@ function App() {
         setSelectedRoverId(remaining.length > 0 ? remaining[0].id : null)
       }
     } catch (error) {
-      setError(
+      toast.error(
         'Failed to delete rover: ' + (error instanceof Error ? error.message : String(error))
       )
     }
@@ -97,11 +98,13 @@ function App() {
       }
 
       if (result.obstacleDetected) {
-        setNotification(result.message || 'Obstacle detected! The rover stopped before hitting it.')
+        toast.warning(result.message || 'Obstacle detected! The rover stopped before hitting it.')
+      } else {
+        toast.success('Commands executed')
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
-      setError('Failed to send commands: ' + errorMessage)
+      toast.error('Failed to send commands: ' + errorMessage)
     }
   }
 
@@ -114,10 +117,10 @@ function App() {
 
       if (newObstacle) {
         setObstacles(prev => [...prev, newObstacle])
-        setNotification(`Added obstacle at (${x}, ${y})`)
+        toast.success(`Obstacle added at (${x}, ${y})`)
       }
-    } catch (error) {
-      setError('Failed to add random obstacle')
+    } catch {
+      toast.error('Failed to add obstacle')
     }
   }, [])
 
@@ -133,7 +136,7 @@ function App() {
       {/* Fixed top bar overlay */}
       <TopBar isConnected={isConnected} />
 
-      {/* Left HUD panel — Rover Fleet (empty slot for Task 3.0) */}
+      {/* Left HUD panel — Rover Fleet */}
       <div
         className="fixed left-0 top-12 w-60 h-[calc(100vh-3rem)] border-r backdrop-blur-md overflow-y-auto"
         style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(15,17,23,0.8)' }}
@@ -147,29 +150,26 @@ function App() {
         />
       </div>
 
-      {/* Right HUD panel — Mission HQ (empty slot for Task 4.0) */}
+      {/* Right HUD panel — Mission HQ */}
       <div
-        className="fixed right-0 top-12 w-72 h-[calc(100vh-3rem)] border-l backdrop-blur-md overflow-y-auto"
+        className="fixed right-0 top-12 w-72 h-[calc(100vh-3rem)] border-l backdrop-blur-md overflow-y-auto flex flex-col"
         style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(15,17,23,0.8)' }}
       >
-        <div className="p-3">
-          <button onClick={addRandomObstacle} className="w-full text-xs">
-            Add Random Obstacle
+        <div className="flex-1">
+          <RoverControls rover={selectedRover} onSendCommands={handleSendCommands} />
+        </div>
+        <div className="p-3 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+          <button
+            onClick={addRandomObstacle}
+            className="w-full text-xs py-1.5 px-3 rounded border font-mono hover:bg-white/[0.05] transition-colors"
+            style={{ color: '#64748b', borderColor: 'rgba(255,255,255,0.08)' }}
+          >
+            + Add Obstacle
           </button>
         </div>
-        {selectedRover && (
-          <RoverControls rover={selectedRover} onSendCommands={handleSendCommands} />
-        )}
       </div>
 
-      {/* Temporary error/notification stubs (replaced by toasts in Task 4.0) */}
-      {error && (
-        <div data-testid="error-banner">
-          {error}
-          <button onClick={() => setError(null)}>Dismiss</button>
-        </div>
-      )}
-      {notification && <div data-testid="notification">{notification}</div>}
+      <Toaster position="bottom-center" theme="dark" />
     </div>
   )
 }
