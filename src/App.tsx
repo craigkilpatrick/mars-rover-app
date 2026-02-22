@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Toaster, toast } from 'sonner'
-import RoverGrid from './components/RoverGrid'
+import MarsScene from './components/MarsScene'
 import RoverList from './components/RoverList'
 import RoverControls from './components/RoverControls'
 import TopBar from './components/TopBar'
@@ -131,7 +131,7 @@ function App() {
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-background">
       {/* Full-viewport canvas as backdrop */}
-      <RoverGrid rovers={rovers} obstacles={obstacles} selectedRoverId={selectedRoverId} />
+      <MarsScene rovers={rovers} obstacles={obstacles} selectedRoverId={selectedRoverId} />
 
       {/* Fixed top bar overlay */}
       <TopBar isConnected={isConnected} />

@@ -31,10 +31,11 @@ export default defineConfig({
       output: {
         manualChunks: {
           'vendor-react': ['react', 'react-dom'],
+          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei'],
         },
       },
     },
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 1500,
   },
   test: {
     globals: true,
