@@ -50,7 +50,7 @@ Install R3F dependencies and stand up a working 3D scene in the app: Mars surfac
 
 ---
 
-### [ ] 2.0 Rover Meshes, Obstacle Meshes, and Selection Highlight
+### [x] 2.0 Rover Meshes, Obstacle Meshes, and Selection Highlight
 
 Add `RoverMesh` and `ObstacleMesh` sub-components to the scene. Each rover renders as a box body + directional turret, correctly rotated for N/S/E/W. Each obstacle renders as an icosahedron rock. All game objects are placed at their correct world positions mapped from game coordinates. The selected rover shows an emissive glow.
 
@@ -61,13 +61,13 @@ Add `RoverMesh` and `ObstacleMesh` sub-components to the scene. Each rover rende
 
 #### 2.0 Tasks
 
-- [ ] 2.1 Define a coordinate mapping helper inside `MarsScene.tsx`: `const toWorld = (n: number) => n - 49.5` — converts game coordinate 0–99 to world space −49.5 to +49.5, centering the grid at the world origin
-- [ ] 2.2 Create `src/components/RoverMesh.tsx`: accept props `rover: Rover` and `isSelected: boolean`; render a `<group>` positioned at `(toWorld(rover.x), 0.2, toWorld(rover.y))` with `rotation.y` set based on direction (`N=0`, `S=Math.PI`, `E=-Math.PI/2`, `W=Math.PI/2`); inside the group, render a box body mesh (`<boxGeometry args={[0.8, 0.4, 0.8]} />`) and a turret mesh (`<boxGeometry args={[0.35, 0.25, 0.5]} />`) offset to `position={[0, 0.32, 0.15]}`
-- [ ] 2.3 Apply materials to `RoverMesh`: body uses `<meshStandardMaterial color={rover.color} emissive={isSelected ? rover.color : '#000000'} emissiveIntensity={isSelected ? 0.6 : 0} roughness={0.6} />`; turret uses the same color without emissive
-- [ ] 2.4 Create `src/components/ObstacleMesh.tsx`: accept prop `obstacle: Obstacle`; render a `<mesh>` positioned at `(toWorld(obstacle.x), 0.4, toWorld(obstacle.y))`; use `<icosahedronGeometry args={[0.5, 0]} />` with `<meshStandardMaterial color="#5c2a00" roughness={1} />`; slightly randomize scale per obstacle id (`scale={0.8 + (obstacle.id % 5) * 0.08}`) so rocks feel varied
-- [ ] 2.5 Wire `RoverMesh` into `MarsScene.tsx` inside `<Canvas>`: `{rovers.map(rover => <RoverMesh key={rover.id} rover={rover} isSelected={rover.id === selectedRoverId} />)}`
-- [ ] 2.6 Wire `ObstacleMesh` into `MarsScene.tsx` inside `<Canvas>`: `{obstacles.map(obs => <ObstacleMesh key={obs.id} obstacle={obs} />)}`
-- [ ] 2.7 Run `npm run test:run` to verify no regressions; visually verify rovers and obstacles render at expected positions in the browser
+- [x] 2.1 Define a coordinate mapping helper inside `MarsScene.tsx`: `const toWorld = (n: number) => n - 49.5` — converts game coordinate 0–99 to world space −49.5 to +49.5, centering the grid at the world origin
+- [x] 2.2 Create `src/components/RoverMesh.tsx`: accept props `rover: Rover` and `isSelected: boolean`; render a `<group>` positioned at `(toWorld(rover.x), 0.2, toWorld(rover.y))` with `rotation.y` set based on direction (`N=0`, `S=Math.PI`, `E=-Math.PI/2`, `W=Math.PI/2`); inside the group, render a box body mesh (`<boxGeometry args={[0.8, 0.4, 0.8]} />`) and a turret mesh (`<boxGeometry args={[0.35, 0.25, 0.5]} />`) offset to `position={[0, 0.32, 0.15]}`
+- [x] 2.3 Apply materials to `RoverMesh`: body uses `<meshStandardMaterial color={rover.color} emissive={isSelected ? rover.color : '#000000'} emissiveIntensity={isSelected ? 0.6 : 0} roughness={0.6} />`; turret uses the same color without emissive
+- [x] 2.4 Create `src/components/ObstacleMesh.tsx`: accept prop `obstacle: Obstacle`; render a `<mesh>` positioned at `(toWorld(obstacle.x), 0.4, toWorld(obstacle.y))`; use `<icosahedronGeometry args={[0.5, 0]} />` with `<meshStandardMaterial color="#5c2a00" roughness={1} />`; slightly randomize scale per obstacle id (`scale={0.8 + (obstacle.id % 5) * 0.08}`) so rocks feel varied
+- [x] 2.5 Wire `RoverMesh` into `MarsScene.tsx` inside `<Canvas>`: `{rovers.map(rover => <RoverMesh key={rover.id} rover={rover} isSelected={rover.id === selectedRoverId} />)}`
+- [x] 2.6 Wire `ObstacleMesh` into `MarsScene.tsx` inside `<Canvas>`: `{obstacles.map(obs => <ObstacleMesh key={obs.id} obstacle={obs} />)}`
+- [x] 2.7 Run `npm run test:run` to verify no regressions; visually verify rovers and obstacles render at expected positions in the browser
 
 ---
 
