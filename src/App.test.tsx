@@ -1,7 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import App from './App'
-import { getRovers, createRover, deleteRover, sendCommands } from './services/roverApi'
+import {
+  getRovers,
+  createRover,
+  deleteRover,
+  sendCommands,
+  getObstacles,
+} from './services/roverApi'
 import { toast } from 'sonner'
 import { Direction, Rover } from './types/rover'
 
@@ -27,6 +33,7 @@ describe('App', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(getRovers).mockResolvedValue(mockRovers)
+    vi.mocked(getObstacles).mockResolvedValue([])
     vi.mocked(createRover).mockResolvedValue({ ...mockRovers[0], id: 3 })
     vi.mocked(deleteRover).mockResolvedValue()
     vi.mocked(sendCommands).mockResolvedValue({ rover: { ...mockRovers[0], x: 1 } })
@@ -317,5 +324,110 @@ describe('App', () => {
     })
 
     expect(vi.mocked(sendCommands)).toHaveBeenCalledWith(1, ['f'])
+  })
+
+  it('should auto-select the first rover on initial load', async () => {
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+    })
+
+    // Mission HQ should show command input for the auto-selected rover
+    await waitFor(() => {
+      expect(screen.queryByRole('textbox')).not.toBeNull()
+    })
+
+    // The no-rover placeholder should not be shown
+    expect(screen.queryByTestId('no-rover-placeholder')).not.toBeInTheDocument()
+  })
+
+  it('should clear selection after deleting the selected rover', async () => {
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('rover-card-1')).toBeInTheDocument()
+    })
+
+    // Select rover 1
+    const selectBtn = screen.getByTestId('rover-card-1').querySelector('button')!
+    fireEvent.click(selectBtn)
+
+    // Confirm rover 1 is selected (command input visible)
+    await waitFor(() => {
+      expect(screen.queryByRole('textbox')).not.toBeNull()
+    })
+
+    // Delete rover 1
+    await waitFor(() => {
+      expect(screen.getByTestId('delete-rover')).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByTestId('delete-rover'))
+
+    // Selection should be cleared — no-rover placeholder appears
+    await waitFor(() => {
+      expect(screen.getByTestId('no-rover-placeholder')).toBeInTheDocument()
+    })
+
+    // Command input should be gone
+    expect(screen.queryByRole('textbox')).toBeNull()
+  })
+
+  it('should not show loading spinner when deleting the selected rover', async () => {
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('rover-card-1')).toBeInTheDocument()
+    })
+
+    // Select rover 1
+    const selectBtn = screen.getByTestId('rover-card-1').querySelector('button')!
+    fireEvent.click(selectBtn)
+
+    // Delete rover 1
+    await waitFor(() => {
+      expect(screen.getByTestId('delete-rover')).toBeInTheDocument()
+    })
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('delete-rover'))
+    })
+
+    // The full-screen loading spinner must never reappear after deletion
+    expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+  })
+
+  it('should not re-execute loadRovers when selectedRoverId changes', async () => {
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('rover-card-1')).toBeInTheDocument()
+    })
+
+    // getRovers is called once on initial mount
+    const initialCallCount = vi.mocked(getRovers).mock.calls.length
+    expect(initialCallCount).toBe(1)
+
+    // Change selectedRoverId by clicking rover 2
+    const selectBtn2 = screen.getByTestId('rover-card-2').querySelector('button')!
+    fireEvent.click(selectBtn2)
+
+    // getRovers should NOT be called again after selection changes
+    await waitFor(() => {
+      expect(screen.getByTestId('rover-card-2')).toHaveClass('border-cyan-400')
+    })
+    expect(vi.mocked(getRovers).mock.calls.length).toBe(initialCallCount)
   })
 })

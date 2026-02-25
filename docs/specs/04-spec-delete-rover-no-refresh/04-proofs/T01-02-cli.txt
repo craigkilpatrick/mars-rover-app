@@ -1,0 +1,40 @@
+Type: cli
+Command: npm run build
+Expected: Clean production build with no TypeScript errors
+Timestamp: 2026-02-24T17:05:00Z
+
+--- OUTPUT ---
+
+> mars-rover-app@0.0.0 build
+> tsc -b && vite build
+
+transforming...
+✓ 1056 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                   0.72 kB │ gzip:   0.37 kB
+dist/assets/jetbrains-mono-greek-400-normal-C190GLew.woff2        4.23 kB
+dist/assets/jetbrains-mono-cyrillic-400-normal-BEIGL1Tu.woff2     5.33 kB
+dist/assets/jetbrains-mono-vietnamese-400-normal-CqNFfHCs.woff    5.37 kB
+dist/assets/jetbrains-mono-greek-400-normal-B9oWc5Lo.woff         5.66 kB
+dist/assets/jetbrains-mono-cyrillic-400-normal-ugxPyKxw.woff      6.98 kB
+dist/assets/jetbrains-mono-latin-ext-400-normal-Bc8Ftmh3.woff2    7.34 kB
+dist/assets/jetbrains-mono-latin-ext-400-normal-fXTG6kC5.woff    10.13 kB
+dist/assets/jetbrains-mono-latin-400-normal-V6pRDFza.woff2       21.17 kB
+dist/assets/jetbrains-mono-latin-400-normal-6-qcROiO.woff        27.50 kB
+dist/assets/index-55FySp8r.css                                   42.75 kB │ gzip:  14.25 kB
+dist/assets/index-BjY0Dj8g.js                                   106.70 kB │ gzip:  29.27 kB
+dist/assets/vendor-framer-GJq1gW6a.js                           127.61 kB │ gzip:  42.60 kB
+dist/assets/vendor-react-am3vsJOy.js                            312.00 kB │ gzip:  96.28 kB
+dist/assets/vendor-three-BfnKRtf8.js                            991.39 kB │ gzip: 270.52 kB
+✓ built in 3.37s
+
+--- CHANGES VERIFIED ---
+src/App.tsx changes:
+  1. loadRovers useCallback deps changed from [selectedRoverId] to []
+  2. Auto-select uses functional update: setSelectedRoverId(prev => prev ?? fetchedRovers[0].id)
+  3. handleDeleteRover simplified: setSelectedRoverId(null) when deleted rover was selected
+
+TypeScript compilation: PASS (no errors, clean build)
+
+Status: PASS

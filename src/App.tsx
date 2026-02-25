@@ -22,8 +22,8 @@ function App() {
     try {
       const fetchedRovers = await roverApi.getRovers()
       setRovers(fetchedRovers || [])
-      if (fetchedRovers?.length > 0 && !selectedRoverId) {
-        setSelectedRoverId(fetchedRovers[0].id)
+      if (fetchedRovers?.length > 0) {
+        setSelectedRoverId(prev => prev ?? fetchedRovers[0].id)
       }
     } catch (error) {
       toast.error(
@@ -31,7 +31,7 @@ function App() {
       )
       setRovers([])
     }
-  }, [selectedRoverId])
+  }, [])
 
   const loadObstacles = useCallback(async () => {
     try {
@@ -76,8 +76,7 @@ function App() {
       await roverApi.deleteRover(id)
       setRovers(prev => prev.filter(rover => rover.id !== id))
       if (selectedRoverId === id) {
-        const remaining = rovers.filter(rover => rover.id !== id)
-        setSelectedRoverId(remaining.length > 0 ? remaining[0].id : null)
+        setSelectedRoverId(null)
       }
     } catch (error) {
       toast.error(
