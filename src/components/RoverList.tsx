@@ -1,7 +1,7 @@
-import { Box, List, ListItem, ListItemButton, Typography, Button, Stack } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
-import DeleteIcon from '@mui/icons-material/Delete'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Badge } from '@/components/ui/badge'
 import { Rover } from '../types/rover'
+import RoverCard from './RoverCard'
 
 interface RoverListProps {
   rovers: Rover[]
@@ -19,74 +19,58 @@ const RoverList: React.FC<RoverListProps> = ({
   onDeleteRover,
 }) => {
   return (
-    <Box
-      sx={{
-        m: 2,
-        p: 2,
-        border: '1px solid #ccc',
-        borderRadius: 1,
-        minWidth: 250,
-        display: 'inline-block',
-        verticalAlign: 'top',
-      }}
-    >
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        Mars Rovers
-      </Typography>
+    <div className="flex flex-col h-full p-3 gap-2">
+      {/* Panel header */}
+      <div
+        className="flex items-center gap-2 px-1 pb-1 border-b"
+        style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+      >
+        <span className="font-mono text-xs tracking-widest uppercase" style={{ color: '#64748b' }}>
+          FLEET
+        </span>
+        <Badge
+          variant="outline"
+          className="font-mono text-xs px-1.5 py-0 h-4"
+          style={{ color: '#64748b', borderColor: 'rgba(255,255,255,0.15)' }}
+        >
+          {rovers.length}
+        </Badge>
+      </div>
 
-      <List sx={{ mb: 2 }}>
-        {rovers.map(rover => (
-          <ListItem key={rover.id} disablePadding>
-            <ListItemButton
-              selected={rover.id === selectedRoverId}
-              onClick={() => onSelectRover(rover.id)}
-              sx={{
-                borderRadius: 1,
-                mb: 0.5,
-                display: 'flex',
-                alignItems: 'center',
-              }}
+      {/* Rover cards */}
+      <div className="flex-1 overflow-y-auto flex flex-col gap-1">
+        <AnimatePresence>
+          {rovers.map(rover => (
+            <motion.div
+              key={rover.id}
+              layout
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ overflow: 'hidden' }}
             >
-              <Box
-                sx={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: '50%',
-                  bgcolor: rover.color,
-                  border: '1px solid rgba(0,0,0,0.1)',
-                  mr: 1,
-                  flexShrink: 0,
-                }}
+              <RoverCard
+                rover={rover}
+                isSelected={rover.id === selectedRoverId}
+                onSelect={onSelectRover}
+                onDelete={onDeleteRover}
               />
-              <Typography>
-                Rover {rover.id} ({rover.x}, {rover.y}) {rover.direction}
-              </Typography>
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
 
-      <Stack direction="row" spacing={1}>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={onAddRover}
-          sx={{ flexGrow: 1 }}
-        >
-          Add New Rover
-        </Button>
-        <Button
-          variant="contained"
-          color="error"
-          startIcon={<DeleteIcon />}
-          onClick={() => selectedRoverId && onDeleteRover(selectedRoverId)}
-          disabled={!selectedRoverId}
-        >
-          Delete
-        </Button>
-      </Stack>
-    </Box>
+      {/* Add rover footer */}
+      <button
+        data-testid="add-rover"
+        onClick={onAddRover}
+        className="w-full text-xs py-1.5 px-3 rounded border font-mono hover:bg-white/[0.05] transition-colors"
+        style={{ color: '#64748b', borderColor: 'rgba(255,255,255,0.08)' }}
+      >
+        + Add Rover
+      </button>
+    </div>
   )
 }
 

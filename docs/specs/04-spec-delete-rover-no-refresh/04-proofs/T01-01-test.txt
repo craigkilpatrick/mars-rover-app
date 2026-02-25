@@ -1,0 +1,31 @@
+Type: test
+Command: npm run test:run
+Expected: All 68 tests pass including 4 new tests covering smooth deletion behavior
+Timestamp: 2026-02-24T17:04:48Z
+
+--- OUTPUT ---
+
+> mars-rover-app@0.0.0 test:run
+> vitest run
+
+ RUN  v1.3.1 /Users/craigkilpatrick/liatrio/projects/mars-rover/mars-rover-app
+
+ ✓ src/services/__tests__/roverApi.test.ts  (29 tests) 11ms
+ ✓ src/components/__tests__/TopBar.test.tsx  (3 tests) 38ms
+ ✓ src/components/__tests__/MarsScene.test.tsx  (5 tests) 38ms
+ ✓ src/components/__tests__/RoverList.test.tsx  (8 tests) 72ms
+ ✓ src/components/__tests__/RoverControls.test.tsx  (8 tests) 114ms
+ ✓ src/App.test.tsx  (15 tests) 420ms
+
+ Test Files  6 passed (6)
+      Tests  68 passed (68)
+   Start at  17:04:48
+   Duration  1.89s (transform 311ms, setup 1.69s, collect 844ms, tests 693ms, environment 2.62s, prepare 571ms)
+
+--- NEW TESTS IN App.test.tsx (4 new, 11 existing = 15 total) ---
+- should auto-select the first rover on initial load
+- should clear selection after deleting the selected rover
+- should not show loading spinner when deleting the selected rover
+- should not re-execute loadRovers when selectedRoverId changes
+
+Status: PASS

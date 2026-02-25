@@ -9,7 +9,7 @@ test.describe('Mars Rover App', () => {
         contentType: 'application/json',
         body: JSON.stringify({
           _embedded: {
-            roverList: [{ id: 1, x: 0, y: 0, direction: 'N' }],
+            roverList: [{ id: 1, x: 0, y: 0, direction: 'N', color: '#06b6d4' }],
           },
         }),
       })
@@ -31,19 +31,19 @@ test.describe('Mars Rover App', () => {
   })
 
   test('should load and display rovers', async ({ page }) => {
-    await expect(page.locator('.MuiListItem-root')).toHaveCount(1)
+    await expect(page.locator('[data-testid="rover-card-1"]')).toBeVisible()
   })
 
   test('should allow selecting a rover', async ({ page }) => {
-    // Click the first rover in the list
-    await page.locator('.MuiListItem-root').first().click()
+    // Click the select button inside the first rover card
+    await page.locator('[data-testid="rover-card-1"] button').first().click()
 
     // Verify that the rover controls become visible
     await expect(page.locator('[data-testid="rover-controls"]')).toBeVisible()
 
     // Verify that the rover position is displayed
     const positionText = await page.locator('[data-testid="rover-position"]').textContent()
-    expect(positionText).toContain('Position: (0, 0) N')
+    expect(positionText).toContain('X: 0 Y: 0')
   })
 
   test('should move rover using controls', async ({ page }) => {
@@ -58,54 +58,23 @@ test.describe('Mars Rover App', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({
-          id: 1,
-          x: 0,
-          y: 1,
-          direction: 'N',
-        }),
+        body: JSON.stringify({ id: 1, x: 0, y: 1, direction: 'N', color: '#06b6d4' }),
       })
     })
 
-    // Update the rovers endpoint to return the new position after the command
-    await page.route('**/api/rovers', async route => {
-      const url = route.request().url()
-      if (url.includes('/commands')) {
-        await route.continue()
-        return
-      }
-
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          _embedded: {
-            roverList: [{ id: 1, x: 0, y: 1, direction: 'N' }],
-          },
-        }),
-      })
-    })
-
-    // Select the rover first
-    await page.locator('.MuiListItem-root').first().click()
-
-    // Get initial position
-    const initialPosition = await page.locator('[data-testid="rover-position"]').textContent()
-    if (!initialPosition) throw new Error('Could not get initial position')
+    // Select the rover
+    await page.locator('[data-testid="rover-card-1"] button').first().click()
 
     // Click the forward button
-    await page.locator('[data-testid="move-forward"]').click()
+    await page.getByRole('button', { name: 'forward' }).click()
 
     // Wait for the new position text
-    await expect(page.locator('[data-testid="rover-position"]')).toHaveText('Position: (0, 1) N')
+    await expect(page.locator('[data-testid="rover-position"]')).toContainText('Y: 1')
   })
 
   test('should display grid', async ({ page }) => {
-    // The grid should be visible
-    await expect(page.locator('[data-testid="rover-grid"]')).toBeVisible()
-
-    // Verify the canvas element exists within the grid
-    await expect(page.locator('[data-testid="rover-grid"] canvas')).toBeVisible()
+    // The 3D Mars scene should be visible
+    await expect(page.locator('[data-testid="mars-scene"]')).toBeVisible()
   })
 
   test('should handle errors gracefully', async ({ page }) => {
@@ -123,9 +92,7 @@ test.describe('Mars Rover App', () => {
     // Reload the page to trigger the error
     await page.reload()
 
-    // Verify error message is displayed
-    await expect(page.locator('.MuiAlert-root')).toBeVisible()
-    const errorText = await page.locator('.MuiAlert-message').textContent()
-    expect(errorText).toContain('Failed to load rovers')
+    // Verify error toast is displayed with error message
+    await expect(page.getByText(/failed to load rovers/i).first()).toBeVisible()
   })
 })
